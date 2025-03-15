@@ -1,6 +1,6 @@
 <?php
 
-if (! function_exists('moneyFormat')) {    
+if (! function_exists('moneyFormat')) {
     /**
      * moneyFormat
      *
@@ -8,6 +8,9 @@ if (! function_exists('moneyFormat')) {
      * @return void
      */
     function moneyFormat($str) {
-        return 'Rp. ' . number_format($str, '0', '', '.');
+        if (is_numeric($str)) {
+            return 'Rp. ' . number_format($str, 0, '', '.');
+        }
+        return 'Rp. 0';
     }
 }

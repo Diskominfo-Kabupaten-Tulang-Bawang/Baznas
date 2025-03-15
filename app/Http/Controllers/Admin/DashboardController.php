@@ -6,26 +6,32 @@ use App\Http\Controllers\Controller;
 use App\Models\Campaign;
 use App\Models\Donation;
 use App\Models\Donatur;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
-{    
+{
     /**
      * index
      *
-     * @return void
+     *
+     * @return \Illuminate\View\View
      */
     public function index()
     {
-
-        //donatur
+        // Count the number of donaturs
         $donaturs = Donatur::count();
 
-        //campaign
+        // Count the number of campaigns
         $campaigns = Campaign::count();
 
-        //donations
+        // Sum the amount of successful donations
         $donations = Donation::where('status', 'success')->sum('amount');
 
-        return view('admin.dashboard.index', compact('donaturs', 'campaigns', 'donations'));
+        // Retrieve all donations with pagination of 10
+        $allDonations = Donation::whereIn('status', ['pending', 'failed'])->paginate(10);
+
+        // Return the view with the retrieved data
+        return view('admin.dashboard.index', compact('donaturs', 'campaigns', 'donations', 'allDonations'));
     }
-}
+
+  }

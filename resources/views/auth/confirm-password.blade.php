@@ -1,9 +1,12 @@
 @extends('layouts.auth', ['title' => 'Confirm Password - Admin'])
 
 @section('content')
-<div class="flex justify-center items-center h-screen bg-gray-300 px-6">
+<div class="flex justify-center items-center h-screen px-6" style="background: #56ab2f; background: -webkit-linear-gradient(to right, #a8e063, #56ab2f); background: linear-gradient(to right, #a8e063, #56ab2f);">
     <div class="p-6 max-w-sm w-full bg-white shadow-md rounded-md">
         <div class="flex justify-center items-center">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Logo_BAZNAS_RI-Hijau-01.png/1167px-Logo_BAZNAS_RI-Hijau-01.png" alt="Badan Amil Zakat Nasional" class="h-24">
+        </div>
+        <div class="flex justify-center items-center mt-4">
             <span class="text-gray-700 font-semibold text-2xl">CONFIRM PASSWORD</span>
         </div>
         @if (session('status'))
@@ -29,7 +32,7 @@
 
             <div class="mt-6">
                 <button type="submit"
-                    class="py-2 px-4 text-center bg-indigo-600 rounded-md w-full text-white text-sm hover:bg-indigo-500 focus:outline-none">
+                    class="py-2 px-4 text-center bg-green-600 rounded-md w-full text-white text-sm hover:bg-green-500 focus:outline-none">
                     CONFIRM PASSWORD
                 </button>
             </div>

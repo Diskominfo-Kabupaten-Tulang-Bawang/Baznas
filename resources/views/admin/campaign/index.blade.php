@@ -1,88 +1,65 @@
-@extends('layouts.app', ['title' => 'Campaign - Admin'])
+
+@extends('layouts.app', ['title' => 'Dashboard - Admin'])
 
 @section('content')
 <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-300">
-    <div class="container mx-auto px-6 py-8">
 
-        <div class="flex items-center">
-            <button class="text-white focus:outline-none bg-gray-600 px-4 py-2 shadow-sm rounded-md">
-                <a href="{{ route('admin.campaign.create') }}">TAMBAH</a>
-            </button>
-
-            <div class="relative mx-4">
-                <span class="absolute inset-y-0 left-0 pl-3 flex items-center">
-                    <svg class="h-5 w-5 text-gray-500" viewBox="0 0 24 24" fill="none">
-                        <path
-                            d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round" />
-                    </svg>
-                </span>
-                <form action="{{ route('admin.campaign.index') }}" method="GET">
-                    <input class="form-input w-full rounded-lg pl-10 pr-4" type="text" name="q" value="{{ request()->query('q') }}"
-                    placeholder="Search">
-                </form>
-            </div>
-        </div>
-
-        <div class="-mx-4 sm:-mx-8 px-4 sm:px-8 py-4 overflow-x-auto">
-            <div class="inline-block min-w-full shadow-sm rounded-lg overflow-hidden">
-                <table class="min-w-full table-auto">
-                    <thead class="justify-between">
-                        <tr class="bg-gray-600 w-full">
-                            <th class="px-16 py-2" style="width: 40%">
-                                <span class="text-white">JUDUL CAMPAIGN</span>
-                            </th>
-                            <th class="px-16 py-2 text-left">
-                                <span class="text-white">KATEGORI</span>
-                            </th>
-                            <th class="px-16 py-2 text-left">
-                                <span class="text-white">TARGET DONASI</span>
-                            </th>
-                            <th class="px-16 py-2 text-left">
-                                <span class="text-white">TANGGAL BERAKHIR</span>
-                            </th>
-                            <th class="px-16 py-2">
-                                <span class="text-white">AKSI</span>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-gray-200">
-                        @forelse($campaigns as $campaign)
-                            <tr class="border bg-white">
-        
-                                <td class="px-5 py-2">
-                                    {{ $campaign->title }}
-                                </td>
-                                <td class="px-16 py-2">
-                                    {{ $campaign->category->name }}
-                                </td>
-                                <td class="px-16 py-2">
-                                    {{ moneyFormat($campaign->target_donation) }}
-                                </td>
-                                <td class="px-16 py-2">
-                                    {{ $campaign->max_date }}
-                                </td>
-                                <td class="px-10 py-2 text-center">
-                                    <a href="{{ route('admin.campaign.edit', $campaign->id) }}" class="bg-indigo-600 px-4 py-2 rounded shadow-sm text-xs text-white focus:outline-none">EDIT</a>
-                                    <button onClick="destroy(this.id)" id="{{ $campaign->id }}" class="bg-red-600 px-4 py-2 rounded shadow-sm text-xs text-white focus:outline-none">HAPUS</button>
-                                </td>
-                            </tr>
-                        @empty
-                            <div class="bg-red-500 text-white text-center p-3 rounded-sm shadow-md">
-                                Data Belum Tersedia!
+            <div class="container-xxl">
+                <!--Card User Data table  -->
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <h4 class="card-title">Program Details</h4>
+                                </div><!--end col-->
+                                <div class="col-auto">
+                                    <a href="{{ route('admin.campaign.create') }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i> Add User </a>
+                                </div><!--end col-->
+                            </div><!--end row-->
+                        </div><!--end card-header-->
+                        <div class="card-body pt-0">
+                            <div class="table-responsive">
+                                <table class="table mb-0" id="datatable_1">
+                                    <thead class="table-light">
+                                      <tr>
+                                        <th>Judul Campingan</th>
+                                        <th>Kategori</th>
+                                        <th>Target Donasi</th>
+                                        <th>Tanggal Berakhir</th>
+                                        <th>Aksi</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse($campaigns as $campaign)
+                                            <tr>
+                                                <td class="d-flex align-items-center">
+                                                    <div class="d-flex align-items-center">
+                                                        {{ $campaign->title }}
+                                                    </div>
+                                                </td>
+                                                <td>{{ $campaign->category->name }}</td>
+                                                <td>{{ moneyFormat($campaign->target_donation) }}</td>
+                                                <td> {{ $campaign->max_date }}</td>
+                                                <td>
+                                                    <a href="{{ route('admin.campaign.edit', $campaign->id) }}"><i class="las la-pen text-secondary fs-18"></i></a>
+                                                    <button class="delete-category border-0 bg-transparent" data-id="{{ $campaign->id }}">
+                                                        <i class="las la-trash-alt text-secondary fs-18"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <div class="bg-red-500 text-white text-center p-3 rounded-sm shadow-md">
+                                                Data Belum Tersedia!
+                                            </div>
+                                        @endforelse
+                                    </tbody>
+                                  </table>
                             </div>
-                        @endforelse
-                    </tbody>
-                </table>
-                @if ($campaigns->hasPages())
-                    <div class="bg-white p-3">
-                        {{ $campaigns->links('vendor.pagination.tailwind') }}
+                        </div>
                     </div>
-                @endif
-            </div>
-        </div>
-    </div>
+                </div> <!-- end col -->
+            </div><!-- container -->
 </main>
 <script>
     //ajax delete
