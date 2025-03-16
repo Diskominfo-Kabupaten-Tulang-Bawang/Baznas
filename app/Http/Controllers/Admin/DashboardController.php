@@ -3,35 +3,41 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Campaign;
-use App\Models\Donation;
-use App\Models\Donatur;
+use App\Services\DonaturService;
+use App\Services\CampaignService;
+use App\Services\DonationService;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    /**
-     * index
-     *
-     *
-     * @return \Illuminate\View\View
-     */
-    public function index()
+    protected $donaturService;
+    protected $campaignService;
+    protected $donationService;
+
+    public function __construct(
+        DonaturService $donaturService,
+        CampaignService $campaignService,
+        DonationService $donationService
+    ) {
+        $this->donaturService = $donaturService;
+        $this->campaignService = $campaignService;
+        $this->donationService = $donationService;
+    }
+
+    public function index(Request $request)
     {
-        // Count the number of donaturs
-        $donaturs = Donatur::count();
+        $donaturs = $this->donaturService->count();
+        $campaigns = $this->campaignService->count();
+        $donations = $this->donationService->sum('amount', [['status', '=', 'success']]);
 
-        // Count the number of campaigns
-        $campaigns = Campaign::count();
 
-        // Sum the amount of successful donations
-        $donations = Donation::where('status', 'success')->sum('amount');
+        $allDonations = $this->donationService->getPaginate(10, [['status', 'IN', ['pending', 'failed']]]);
 
-        // Retrieve all donations with pagination of 10
-        $allDonations = Donation::whereIn('status', ['pending', 'failed'])->paginate(10);
+        if ($request->ajax()) {
+            return view('admin.dashboard._donation_table', compact('allDonations'));
+        }
 
-        // Return the view with the retrieved data
         return view('admin.dashboard.index', compact('donaturs', 'campaigns', 'donations', 'allDonations'));
     }
 
-  }
+}

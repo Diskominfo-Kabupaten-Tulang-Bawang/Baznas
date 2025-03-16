@@ -25,8 +25,7 @@
 
 </head>
 
-<body>
-
+<body data-csrf-token="{{ csrf_token() }}">
     <!-- Top Bar Start -->
     <div class="topbar d-print-none">
         <div class="container-xxl">
@@ -95,11 +94,8 @@
     <!-- leftbar-tab-menu -->
     <div class="startbar d-print-none">
         <div class="brand">
-            <a href="index" class="logo d-flex align-items-center text-decoration-none text-dark fw-bold">
-            <img loading="lazy" src="https://tulangbawangkab.go.id/img/logo/favicon.png" alt="Logo" width="40px" class="img-fluid">
-            {{-- <span class="mx-3 welcome-text">
-                <h4 class="mb-0 fw-bold text-truncate" style="color: rgb(34, 197, 94);">Baznas</h4>
-            </span> --}}
+            <a href="{{ route('admin.dashboard.index') }}" class="logo d-flex align-items-center text-decoration-none text-dark fw-bold">
+                <img loading="lazy" src="https://tulangbawangkab.go.id/img/logo/favicon.png" alt="Logo" width="40px" class="img-fluid">
             </a>
         </div>
         <div class="startbar-menu">
@@ -114,45 +110,45 @@
                             <span>Menu</span>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="dashboard">
+                            <a class="nav-link" href="{{ route('admin.dashboard.index') }}">
                                 <i class="iconoir-home-simple menu-icon"></i>
                                 <span>Dashboards</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="category">
+                            <a class="nav-link" href="{{ route('admin.category.index') }}">
                                 <i class="iconoir-view-grid menu-icon"></i>
                                 <span>Kategori</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="campaign">
+                            <a class="nav-link" href="{{ route('admin.campaign.index') }}">
                                 <i class="iconoir-journal-page menu-icon"></i>
                                 <span>Program</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="donatur">
+                            <a class="nav-link" href="{{ route('admin.donatur.index') }}">
                                 <i class="fas fa-user-friends menu-icon"></i>
                                 <span>Muzakki</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="donation">
+                            <a class="nav-link" href="{{ route('admin.donation.index') }}">
                                 <i class="fas fa-chart-line menu-icon"></i>
                                 <span>Donasi</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="profile">
+                            <a class="nav-link" href="{{ route('admin.profile.index') }}">
                                 <i class="iconoir-fingerprint-lock-circle menu-icon"></i>
                                 <span>Profile</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="slider">
+                            <a class="nav-link" href="{{ route('admin.slider.index') }}">
                                 <i class="fas fa-chalkboard menu-icon"></i>
-                                <span>Sidebar</span>
+                                <span>Slider</span>
                             </a>
                         </li>
                     </ul>
@@ -160,6 +156,7 @@
             </div>
         </div>
     </div>
+
     <div class="startbar-overlay d-print-none"></div>
     <!-- end leftbar-tab-menu -->
 

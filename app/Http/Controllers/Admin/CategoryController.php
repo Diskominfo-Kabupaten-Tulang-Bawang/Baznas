@@ -2,179 +2,83 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Category;
-use Illuminate\Support\Str;
+use App\Services\CategoryService;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Storage;
+use App\Models\Category;
 
 class CategoryController extends Controller
 {
-    /**
-     * index
-     *
-     * @return void
-     */
+    protected $categoryService;
+
+    public function __construct(CategoryService $categoryService)
+    {
+        $this->categoryService = $categoryService;
+    }
+
     public function index()
     {
-        $categories = Category::latest()->when(request()->q, function($categories) {
-            $categories = $categories->where('name', 'like', '%'. request()->q . '%');
-        })->paginate(10);
+        $categories = Category::latest()->paginate(10);
+
+        if (request()->ajax()) {
+            return response()->json([
+                'html' => view('admin.category._data_table', compact('categories'))->render()
+            ]);
+        }
 
         return view('admin.category.index', compact('categories'));
     }
 
-    /**
-     * create
-     *
-     * @return void
-     */
     public function create()
     {
         return view('admin.category.create');
     }
 
-    /**
-     * store
-     *
-     * @param  mixed $request
-     * @return void
-     */
+
     public function store(Request $request)
     {
-       $this->validate($request, [
-           'image' => 'required|image|mimes:jpeg,jpg,png|max:2000',
-           'name'  => 'required|unique:categories'
-       ]);
+        $validated = $request->validate([
+            'image' => 'required|image|mimes:jpeg,jpg,png|max:2000',
+            'name'  => 'required|unique:categories'
+        ]);
 
-       //upload image
-       $image = $request->file('image');
-       $image->storeAs('public/categories', $image->hashName());
+        $category = $this->categoryService->createCategory($validated + ['image' => $request->file('image')]);
 
-       //save to DB
-       $category = Category::create([
-           'image'  => $image->hashName(),
-           'name'   => $request->name,
-           'slug'   => Str::slug($request->name, '-')
-       ]);
-
-       if($category){
-            //redirect dengan pesan sukses
-            return redirect()->route('admin.category.index')->with(['success' => 'Data Berhasil Disimpan!']);
-        }else{
-            //redirect dengan pesan error
-            return redirect()->route('admin.category.index')->with(['error' => 'Data Gagal Disimpan!']);
-        }
+        return response()->json([
+            'status' => $category ? 'success' : 'error',
+            'message' => $category ? 'Data Berhasil Disimpan!' : 'Data Gagal Disimpan!'
+        ]);
     }
 
-    /**
-     * edit
-     *
-     * @param  mixed $request
-     * @param  mixed $category
-     * @return void
-     */
-    public function edit(Category $category)
+    public function edit($id)
     {
+        $category = $this->categoryService->getCategoryById($id);
         return view('admin.category.edit', compact('category'));
     }
 
-    /**
-     * update
-     *
-     * @param  mixed $request
-     * @param  mixed $category
-     * @return void
-     */
-    public function update(Request $request, Category $category)
+
+    public function update(Request $request, $id)
     {
-        $this->validate($request, [
-            'name'  => 'required|unique:categories,name,'.$category->id
+        $validated = $request->validate([
+            'name' => 'required|unique:categories,name,' . $id
         ]);
 
-        //check jika image kosong
-        if($request->file('image') == '') {
+        $updated = $this->categoryService->updateCategory($id, $validated + ['image' => $request->file('image')]);
 
-            //update data tanpa image
-            $category = Category::findOrFail($category->id);
-            $category->update([
-                'name'   => $request->name,
-                'slug'   => Str::slug($request->name, '-')
-            ]);
-
-        } else {
-
-            //hapus image lama
-            Storage::disk('local')->delete('public/categories/'.basename($category->image));
-
-            //upload image baru
-            $image = $request->file('image');
-            $image->storeAs('public/categories', $image->hashName());
-
-            //update dengan image baru
-            $category = Category::findOrFail($category->id);
-            $category->update([
-                'image'  => $image->hashName(),
-                'name'   => $request->name,
-                'slug'   => Str::slug($request->name, '-')
-            ]);
-        }
-
-        if($category){
-            //redirect dengan pesan sukses
-            return redirect()->route('admin.category.index')->with(['success' => 'Data Berhasil Diupdate!']);
-        }else{
-            //redirect dengan pesan error
-            return redirect()->route('admin.category.index')->with(['error' => 'Data Gagal Diupdate!']);
-        }
+        return response()->json([
+            'status' => $updated ? 'success' : 'error',
+            'message' => $updated ? 'Data Berhasil Diupdate!' : 'Data Gagal Diupdate!'
+        ]);
     }
-
-    /**
-     * destroy
-     *
-     * @param  mixed $id
-     * @return void
-     */
-    // public function destroy($id)
-    // {
-    //     $category = Category::findOrFail($id);
-    //     Storage::disk('local')->delete('public/categories/'.basename($category->image));
-    //     $category->delete();
-
-    //     if($category){
-    //         return response()->json([
-    //             'status' => 'success'
-    //         ]);
-    //     }else{
-    //         return response()->json([
-    //             'status' => 'error'
-    //         ]);
-    //     }
-    // }
 
     public function destroy($id)
-{
-    $category = Category::findOrFail($id);
+    {
+        $deleted = $this->categoryService->deleteCategory($id);
 
-    // Hapus gambar hanya jika ada
-    if ($category->image && Storage::disk('local')->exists('public/categories/' . basename($category->image))) {
-        Storage::disk('local')->delete('public/categories/' . basename($category->image));
-    }
-
-    // Hapus data dari database
-    $deleted = $category->delete();
-
-    if ($deleted) {
         return response()->json([
-            'status' => 'success',
-            'message' => 'Kategori berhasil dihapus!'
-        ]);
-    } else {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Gagal menghapus kategori!'
+            'status' => $deleted ? 'success' : 'error',
+            'message' => $deleted ? 'Data Berhasil Dihapus!' : 'Data Gagal Dihapus!'
         ]);
     }
-}
 
 }

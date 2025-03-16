@@ -3,6 +3,7 @@
 @section('content')
 <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-300">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     {{-- SweetAlert Notification --}}
     @if(session('success'))
@@ -35,7 +36,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <form action="{{ route('admin.donation.filter') }}" method="GET">
+                    <form id="filterForm" action="{{ route('admin.donation.filter') }}" method="GET">
                         <div class="row mt-3">
                             <div class="col-md-4 mb-3 mb-md-0">
                                 <label for="start_date" class="form-label">Tanggal Awal</label>
@@ -70,77 +71,39 @@
                 </div><!-- end card-header -->
 
                 <div class="card-body pt-0">
-                    @if(isset($total))
-                    <div class="alert alert-info">
-                        Total Donasi: Rp {{ number_format($total, 0, ',', '.') }}
-                    </div>
-                    @endif
-
-                    <div class="table-responsive">
-                        <table class="table mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Invoice</th>
-                                    <th>Campaign ID</th>
-                                    <th>Donatur ID</th>
-                                    <th>Amount</th>
-                                    <th>Pray</th>
-                                    <th>Bukti Dukung</th>
-                                    <th>Tanggal</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($donations as $donation)
-                                <tr>
-                                    <td>{{ $donation->id }}</td>
-                                    <td>{{ $donation->invoice }}</td>
-                                    <td>{{ $donation->campaign_id }}</td>
-                                    <td>{{ $donation->donatur_id }}</td>
-                                    <td>Rp {{ number_format((float) $donation->amount, 0, ',', '.') }}</td>
-                                    <td>{{ $donation->pray }}</td>
-                                    <td>
-                                        <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal{{ $donation->id }}">
-                                            <img src="https://seosecret.id/placeholder/600x300/D5D5D5/584959" alt="Bukti Dukung" width="100">
-                                        </a>
-                                        <!-- Modal -->
-                                        <div class="modal fade" id="imageModal{{ $donation->id }}" tabindex="-1" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title">Bukti Dukung</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <img src="https://seosecret.id/placeholder/600x300/D5D5D5/584959" alt="Bukti Dukung" class="img-fluid">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>{{ \Carbon\Carbon::parse($donation->created_at)->format('Y-m-d') }}</td>
-                                    <td>
-                                        <span class="badge
-                                            @if($donation->status == 'success') bg-success
-                                            @elseif($donation->status == 'pending') bg-warning
-                                            @else bg-danger
-                                            @endif">
-                                            {{ ucfirst($donation->status) }}
-                                        </span>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="d-flex justify-content-center mt-3">
-                        {{ $donations->links('pagination::bootstrap-4') }}
+                    <div id="donationTable">
+                        @include('admin.donation._data_table')
                     </div>
                 </div><!-- end card-body -->
             </div> <!-- end card -->
         </div><!-- end col -->
     </div><!-- end container -->
 </main>
+
+<script>
+   $(document).ready(function () {
+    $('#filterForm').on('submit', function (e) {
+        e.preventDefault();
+
+        $.ajax({
+            data: $(this).serialize(),
+            url: $(this).attr('action'),
+            type: 'GET',
+            success: function (response) {
+                $('#donationTable').html(response.html); // Ambil `html` dari JSON response
+            },
+            error: function (xhr) {
+                Swal.fire({
+                    title: "Error!",
+                    text: xhr.responseJSON?.message || "Terjadi kesalahan.",
+                    icon: "error",
+                    confirmButtonText: "OK"
+                });
+            }
+        });
+    });
+});
+
+</script>
 
 @endsection

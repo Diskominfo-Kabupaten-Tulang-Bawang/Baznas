@@ -2,133 +2,98 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Slider;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Storage;
+use App\Services\SliderService;
+use Illuminate\Http\Request;
 
 class SliderController extends Controller
 {
+    protected $sliderService;
+
+    public function __construct(SliderService $sliderService)
+    {
+        $this->sliderService = $sliderService;
+    }
+
     /**
-     * index
-     *
-     * @return void
+     * Menampilkan daftar slider dengan pagination
      */
     public function index()
     {
-        $sliders = Slider::latest()->paginate(5);
+        if (request()->ajax()) {
+            $sliders = $this->sliderService->getPaginate(5);
+            return view('admin.slider._data_table', compact('sliders'))->render();
+        }
+
+        $sliders = $this->sliderService->getPaginate(5);
         return view('admin.slider.index', compact('sliders'));
     }
 
-    /**
-     * store
-     *
-     * @param  mixed $request
-     * @return void
-     */
-    public function store(Request $request)
+
+    public function create()
     {
-        $this->validate($request, [
-            'image' => 'required|image|mimes:jpeg,jpg,png|max:2000',
-            'link'  => 'required'
-        ]);
-
-        //upload image
-        $image = $request->file('image');
-        $image->storeAs('public/sliders', $image->hashName());
-
-        //save to DB
-        $slider = Slider::create([
-            'image'  => $image->hashName(),
-            'link'   => $request->link
-        ]);
-
-        if($slider){
-             //redirect dengan pesan sukses
-             return redirect()->route('admin.slider.index')->with(['success' => 'Data Berhasil Disimpan!']);
-         }else{
-             //redirect dengan pesan error
-             return redirect()->route('admin.slider.index')->with(['error' => 'Data Gagal Disimpan!']);
-         }
+        return view('admin.slider.create');
     }
 
     /**
-     * edit
-     *
-     * @param  mixed $id
-     * @return void
+     * Menyimpan slider baru
+     */
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'image' => 'required|image|mimes:jpeg,jpg,png|max:2000',
+            'link'  => 'required|string|max:255'
+        ]);
+
+        $this->sliderService->store($data);
+
+        return redirect()->route('admin.slider.index')->with('success', 'Data Berhasil Disimpan!');
+    }
+
+    /**
+     * Menampilkan halaman edit slider
      */
     public function edit($id)
     {
-        $slider = Slider::findOrFail($id);
+        $slider = $this->sliderService->find($id);
+        if (!$slider) {
+            return redirect()->route('admin.slider.index')->with('error', 'Data tidak ditemukan!');
+        }
+
         return view('admin.slider.edit', compact('slider'));
     }
 
     /**
-     * update
-     *
-     * @param  mixed $request
-     * @param  mixed $id
-     * @return void
+     * Memperbarui slider
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
-            'image' => 'image|mimes:jpeg,jpg,png|max:2000',
-            'link'  => 'required'
+        $data = $request->validate([
+            'image' => 'nullable|image|mimes:jpeg,jpg,png|max:2000',
+            'link'  => 'required|string|max:255'
         ]);
 
-        $slider = Slider::findOrFail($id);
-
-        if ($request->hasFile('image')) {
-            //upload new image
-            $image = $request->file('image');
-            $image->storeAs('public/sliders', $image->hashName());
-
-            //delete old image
-            Storage::disk('local')->delete('public/sliders/'.basename($slider->image));
-
-            //update slider with new image
-            $slider->update([
-                'image' => $image->hashName(),
-                'link'  => $request->link
-            ]);
-        } else {
-            //update slider without image
-            $slider->update([
-                'link' => $request->link
-            ]);
+        $slider = $this->sliderService->find($id);
+        if (!$slider) {
+            return redirect()->route('admin.slider.index')->with('error', 'Data tidak ditemukan!');
         }
 
-        if($slider){
-            //redirect dengan pesan sukses
-            return redirect()->route('admin.slider.index')->with(['success' => 'Data Berhasil Diupdate!']);
-        }else{
-            //redirect dengan pesan error
-            return redirect()->route('admin.slider.index')->with(['error' => 'Data Gagal Diupdate!']);
-        }
+        $this->sliderService->update($slider, $data);
+
+        return redirect()->route('admin.slider.index')->with('success', 'Data Berhasil Diupdate!');
     }
 
     /**
-     * destroy
-     *
-     * @param  mixed $id
-     * @return void
+     * Menghapus slider
      */
     public function destroy($id)
     {
-        $slider = Slider::findOrFail($id);
-        Storage::disk('local')->delete('public/sliders/'.basename($slider->image));
-        $slider->delete();
+        $deleted = $this->sliderService->destroy($id);
 
-        if($slider){
-            return response()->json([
-                'status' => 'success'
-            ]);
-        }else{
-            return response()->json([
-                'status' => 'error'
-            ]);
+        if (!$deleted) {
+            return response()->json(['status' => 'error', 'message' => 'Data tidak ditemukan!'], 404);
         }
+
+        return response()->json(['status' => 'success']);
     }
 }

@@ -1,52 +1,42 @@
-@extends('layouts.app', ['title' => 'Dashboard - Admin'])
+@extends('layouts.app', ['title' => 'Tambah Slider'])
 
 @section('content')
-<div class="container mt-4">
-    <div class="card">
-        <div class="card-header">
-            <h3>Edit Slider</h3>
-        </div>
-        <div class="card-body">
-            <form id="edit-slider-form" enctype="multipart/form-data">
+<main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-300">
+    <div class="container">
+        <div class="card p-4">
+            <h5 class="fw-bold">UPLOAD SLIDER</h5>
+            <hr>
+            <form id="slider-form" enctype="multipart/form-data">
                 @csrf
-                @method('PUT')
-
-                <div class="form-group mb-3">
-                    <label for="link">Link</label>
-                    <input type="text" name="link" class="form-control" value="{{ $slider->link }}" required>
+                <div class="mb-3">
+                    <label class="form-label">GAMBAR</label>
+                    <input type="file" class="form-control" name="image">
                 </div>
-
-                <div class="form-group mb-3">
-                    <label for="image">Image</label>
-                    <input type="file" name="image" class="form-control">
-                    <small class="form-text text-muted">Biarkan kosong jika Anda tidak ingin mengubah gambar.</small>
+                <div class="mb-3">
+                    <label class="form-label">LINK SLIDER</label>
+                    <input type="text" class="form-control" name="link" value="{{ old('link') }}" placeholder="Link Promo">
                 </div>
-
-                <div class="form-group">
-                    <button id="update-btn" type="button" class="btn btn-primary">Update</button>
-                    <a href="{{ route('admin.slider.index') }}" class="btn btn-secondary">Cancel</a>
-                </div>
+                <button id="upload-btn" type="button" class="btn btn-primary">UPLOAD</button>
             </form>
         </div>
     </div>
-</div>
+</main>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
 $(document).ready(function () {
-    $("#update-btn").click(function (e) {
+    $("#upload-btn").click(function (e) {
         e.preventDefault();
 
-        let form = $("#edit-slider-form")[0];
+        let form = $("#slider-form")[0];
         let formData = new FormData(form);
         formData.append('_token', '{{ csrf_token() }}');
 
-        $("#update-btn").prop("disabled", true).text("Mengupdate...");
-
+        $("#upload-btn").prop("disabled", true).text("Mengupload...");
         $.ajax({
-            url: "{{ route('admin.slider.update', $slider->id) }}",
+            url: "{{ route('admin.slider.store') }}",
             type: "POST",
             data: formData,
             processData: false,
@@ -55,7 +45,7 @@ $(document).ready(function () {
                 Swal.fire({
                     icon: 'success',
                     title: 'BERHASIL!',
-                    text: 'Slider berhasil diperbarui!',
+                    text: 'Slider berhasil diupload!',
                     showConfirmButton: false,
                     timer: 3000
                 }).then(() => {
@@ -63,7 +53,7 @@ $(document).ready(function () {
                 });
             },
             error: function (xhr) {
-                $("#update-btn").prop("disabled", false).text("Update");
+                $("#upload-btn").prop("disabled", false).text("UPLOAD");
 
                 if (xhr.status === 422) {
                     let errors = xhr.responseJSON.errors;

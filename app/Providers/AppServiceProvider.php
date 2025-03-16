@@ -3,24 +3,38 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Services\DonaturService;
+use App\Services\CampaignService;
+use App\Services\DonationService;
+use App\Services\UserService;
+use App\Models\Donatur;
+use App\Models\Campaign;
+use App\Models\Donation;
+use App\Models\User;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
     public function register()
     {
-        //
+        $this->app->bind(DonaturService::class, function ($app) {
+            return new DonaturService($app->make(Donatur::class));
+        });
+
+        $this->app->bind(CampaignService::class, function ($app) {
+            return new CampaignService($app->make(Campaign::class));
+        });
+
+        $this->app->bind(DonationService::class, function ($app) {
+            return new DonationService($app->make(Donation::class));
+        });
+
+        $this->app->bind(UserService::class, function ($app) {
+            return new UserService($app->make(User::class));
+        });
+
+
     }
 
-    /**
-     * Bootstrap any application services.
-     *
-     * @return void
-     */
     public function boot()
     {
         //

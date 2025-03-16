@@ -1,74 +1,57 @@
-
 @extends('layouts.app', ['title' => 'Dashboard - Admin'])
 
 @section('content')
 <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-300">
-
-            <div class="container-xxl">
-                <!--Card User Data table  -->
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="row align-items-center">
-                                <div class="col">
-                                    <h4 class="card-title">Program Details</h4>
-                                </div><!--end col-->
-                                <div class="col-auto">
-                                    <a href="{{ route('admin.campaign.create') }}" class="btn btn-primary"><i class="fas fa-plus me-1"></i> Add User </a>
-                                </div><!--end col-->
-                            </div><!--end row-->
-                        </div><!--end card-header-->
-                        <div class="card-body pt-0">
-                            <div class="table-responsive">
-                                <table class="table mb-0" id="datatable_1">
-                                    <thead class="table-light">
-                                      <tr>
-                                        <th>Judul Campingan</th>
-                                        <th>Kategori</th>
-                                        <th>Target Donasi</th>
-                                        <th>Tanggal Berakhir</th>
-                                        <th>Aksi</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse($campaigns as $campaign)
-                                            <tr>
-                                                <td class="d-flex align-items-center">
-                                                    <div class="d-flex align-items-center">
-                                                        {{ $campaign->title }}
-                                                    </div>
-                                                </td>
-                                                <td>{{ $campaign->category->name }}</td>
-                                                <td>{{ moneyFormat($campaign->target_donation) }}</td>
-                                                <td> {{ $campaign->max_date }}</td>
-                                                <td>
-                                                    <a href="{{ route('admin.campaign.edit', $campaign->id) }}"><i class="las la-pen text-secondary fs-18"></i></a>
-                                                    <button class="delete-category border-0 bg-transparent" data-id="{{ $campaign->id }}">
-                                                        <i class="las la-trash-alt text-secondary fs-18"></i>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        @empty
-                                            <div class="bg-red-500 text-white text-center p-3 rounded-sm shadow-md">
-                                                Data Belum Tersedia!
-                                            </div>
-                                        @endforelse
-                                    </tbody>
-                                  </table>
-                            </div>
+    <div class="container-xxl">
+        <!-- Card User Data Table -->
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h4 class="card-title">Program Details</h4>
+                        </div>
+                        <div class="col-auto">
+                            <a href="{{ route('admin.campaign.create') }}" class="btn btn-primary">
+                                <i class="fas fa-plus me-1"></i> Add Campaign
+                            </a>
                         </div>
                     </div>
-                </div> <!-- end col -->
-            </div><!-- container -->
+                </div>
+                <div class="card-body pt-0">
+                    <div class="table-responsive" id="campaignTable">
+                        @include('admin.campaign._data_table')
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </main>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
-    //ajax delete
-    function destroy(id) {
-        var id = id;
-        var token = $("meta[name='csrf-token']").attr("content");
+    function loadCampaigns() {
+        $.ajax({
+            url: "{{ route('admin.campaign.index') }}",
+            type: "GET",
+            dataType: "html",
+            success: function(response) {
+                $('#campaignTable').html(response);
+            },
+            error: function(xhr) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function destroy(button) {
+        var id = button.getAttribute("data-id");
+        var token = document.querySelector("meta[name='csrf-token']").getAttribute("content");
 
         Swal.fire({
-            title: 'APAKAH KAMU YAKIN ?',
+            title: 'APAKAH KAMU YAKIN?',
             text: "INGIN MENGHAPUS DATA INI!",
             icon: 'warning',
             showCancelButton: true,
@@ -78,40 +61,44 @@
             confirmButtonText: 'YA, HAPUS!',
         }).then((result) => {
             if (result.isConfirmed) {
-                //ajax delete
-                jQuery.ajax({
-                    url: `/admin/campaign/${id}`,
-                    data: {
-                        "id": id,
-                        "_token": token
+                fetch(`/admin/campaign/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': token
                     },
-                    type: 'DELETE',
-                    success: function (response) {
-                        if (response.status == "success") {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'BERHASIL!',
-                                text: 'DATA BERHASIL DIHAPUS!',
-                                showConfirmButton: false,
-                                timer: 3000
-                            }).then(function () {
-                                location.reload();
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'GAGAL!',
-                                text: 'DATA GAGAL DIHAPUS!',
-                                showConfirmButton: false,
-                                timer: 3000
-                            }).then(function () {
-                                location.reload();
-                            });
-                        }
+                    body: JSON.stringify({ id: id })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'BERHASIL!',
+                            text: 'DATA BERHASIL DIHAPUS!',
+                            showConfirmButton: false,
+                            timer: 3000
+                        }).then(() => {
+                            loadCampaigns();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'GAGAL!',
+                            text: 'DATA GAGAL DIHAPUS!',
+                            showConfirmButton: false,
+                            timer: 3000
+                        });
                     }
-                });
+                })
+                .catch(error => console.error('Error:', error));
             }
-        })
+        });
     }
+
+    $(document).ready(function() {
+        loadCampaigns();
+    });
 </script>
+
 @endsection

@@ -35,11 +35,12 @@ Route::prefix('admin')->group(function () {
         Route::resource('/donation', DonationController::class, ['as' => 'admin']);
         Route::get('admin/donation/filter', [DonationController::class, 'filter'])->name('admin.donation.filter');
         Route::put('admin/donation/update/{id}', [DonationController::class, 'update'])->name('admin.donation.update');
-
+        Route::delete('admin/donation/{id}', [DonationController::class, 'destroy'])->name('admin.donation.destroy');
 
         Route::get('/profile', [ProfileController::class, 'index'])->name('admin.profile.index');
 
         //route resource slider
-        Route::resource('/slider', SliderController::class, ['except' => ['show', 'create'], 'as' => 'admin']);
+        Route::resource('/slider', SliderController::class, ['except' => ['show'], 'as' => 'admin']);
+
     });
 });
