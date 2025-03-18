@@ -20,10 +20,9 @@ class CategoryController extends Controller
     {
         $categories = Category::latest()->paginate(10);
 
-        if (request()->ajax()) {
-            return response()->json([
-                'html' => view('admin.category._data_table', compact('categories'))->render()
-            ]);
+        if (request()->ajax() && request()->get('load') == 'table') {
+            return view('admin.category._data_table', compact('categories'))->render();
+
         }
 
         return view('admin.category.index', compact('categories'));

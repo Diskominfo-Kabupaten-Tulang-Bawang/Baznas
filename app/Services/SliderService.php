@@ -61,4 +61,11 @@ class SliderService extends BaseService
 
         return false;
     }
+
+    public function search($keyword, $perPage = 10)
+    {
+        return Slider::where('title', 'LIKE', "%{$keyword}%")
+            ->orWhere('description', 'LIKE', "%{$keyword}%")
+            ->paginate($perPage);
+    }
 }

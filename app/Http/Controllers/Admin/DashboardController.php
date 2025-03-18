@@ -30,11 +30,10 @@ class DashboardController extends Controller
         $campaigns = $this->campaignService->count();
         $donations = $this->donationService->sum('amount', [['status', '=', 'success']]);
 
-
         $allDonations = $this->donationService->getPaginate(10, [['status', 'IN', ['pending', 'failed']]]);
 
         if ($request->ajax()) {
-            return view('admin.dashboard._donation_table', compact('allDonations'));
+            return view('admin.dashboard._data_table', compact('allDonations'));
         }
 
         return view('admin.dashboard.index', compact('donaturs', 'campaigns', 'donations', 'allDonations'));

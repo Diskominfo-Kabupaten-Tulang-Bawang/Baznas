@@ -61,24 +61,26 @@ abstract class BaseService
         return $this->model->find($id)?->delete();
     }
 
+
     public function sum($column, $conditions = [])
     {
         $query = $this->model->query();
 
         foreach ($conditions as $condition) {
             if (count($condition) === 3) {
-                [$column, $operator, $value] = $condition;
+                [$conditionColumn, $operator, $value] = $condition;
 
                 if (strtolower($operator) === 'in') {
-                    $query->whereIn($column, $value);
+                    $query->whereIn($conditionColumn, $value);
                 } else {
-                    $query->where($column, $operator, $value);
+                    $query->where($conditionColumn, $operator, $value);
                 }
             }
         }
 
         return $query->sum($column);
     }
+
 
     public function count($conditions = [])
     {

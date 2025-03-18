@@ -6,18 +6,32 @@ use App\Services\CampaignService;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Services\SearchService;
+
 
 class CampaignController extends Controller
 {
     protected $campaignService;
+    protected $searchService;
 
-    public function __construct(CampaignService $campaignService)
-    {
+    public function __construct(
+        CampaignService $campaignService,
+        SearchService $searchService
+    ){
         $this->campaignService = $campaignService;
+        $this->searchService = $searchService;
     }
 
-    public function index(Request $request)
+    public function index(Request $request, SearchService $searchService)
     {
+        $keyword = $request->input('search');
+
+        if ($keyword) {
+            $campaigns = $searchService->search(\App\Models\Campaign::class, $keyword, ['title', 'description']);
+        } else {
+            $this->campaignService->getPaginate(10);
+        }
+
         $campaigns = $this->campaignService->getPaginate(10);
 
         if ($request->ajax()) {

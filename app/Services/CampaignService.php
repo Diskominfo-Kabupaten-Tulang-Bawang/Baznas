@@ -57,4 +57,12 @@ class CampaignService extends BaseService
         }
         return false;
     }
+
+    public function search($keyword, $perPage = 10)
+    {
+        return Campaign::where('title', 'LIKE', "%{$keyword}%")
+            ->orWhere('description', 'LIKE', "%{$keyword}%")
+            ->paginate($perPage);
+    }
+
 }

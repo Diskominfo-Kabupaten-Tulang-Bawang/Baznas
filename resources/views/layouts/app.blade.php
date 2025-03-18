@@ -42,10 +42,12 @@
                 </ul>
                 <ul class="topbar-item list-unstyled d-inline-flex align-items-center mb-0">
                     <li class="hide-phone app-search">
-                        <form role="search" action="#" method="get">
-                            <input type="search" name="search" class="form-control top-search mb-0" placeholder="Search here...">
-                            <button type="button"><i class="iconoir-search"></i></button>
+                        <form role="search" action="{{ $searchRoute ?? route('admin.dashboard.index') }}" method="get">
+                            <input type="hidden" name="type" value="{{ request('type', 'donatur') }}">
+                            <input type="search" name="search" class="form-control top-search mb-0" placeholder="Cari disini..." value="{{ request('search') }}">
+                            <button type="submit"><i class="iconoir-search"></i></button>
                         </form>
+
                     </li>
                     <li class="topbar-item">
                         <a class="nav-link nav-icon" href="javascript:void(0);" id="light-dark-mode">
@@ -196,14 +198,38 @@
 
 
     <!-- Javascript  -->
+    <script src="{{ asset('assets') }}/libs/jquery/jquery.js"></script>
     <script src="/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/libs/simplebar/simplebar.min.js"></script>
-    <script src="/assets/libs/apexcharts/apexcharts.min.js"></script>
     <script src="/assets/data/stock-prices.js"></script>
     <script src="/assets/libs/jsvectormap/js/jsvectormap.min.js"></script>
     <script src="/assets/libs/jsvectormap/maps/world.js"></script>
-    <script src="/assets/js/pages/index.init.js"></script>
-    <script src="/assets/js/app.js"></script>
+    <script src="/assets/js/app.js"></script><script type="text/javascript">
+        async function transAjax(data) {
+              html = null;
+              data.headers = {
+                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+              }
+              await $.ajax(data).done(function(res) {
+                      html = res;
+                  })
+                  .fail(function() {
+                      return false;
+                  })
+              return html
+          }
+          function loadingsubmit(state, btnSubmit, btnLoading) {
+              if (state) {
+                  $('#'+btnSubmit).addClass('d-none');
+                  $('#'+btnLoading).removeClass('d-none');
+              } else {
+                  $('#'+btnSubmit).removeClass('d-none');
+                  $('#'+btnLoading).addClass('d-none');
+              }
+          }
+      </script>
+      @stack('js')
+
 </body>
 
 </html>

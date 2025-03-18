@@ -56,65 +56,211 @@
                 </div>
             </div>
         </div>
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Donasi Details</h4>
+                </div>
+                <div class="card-body pt-0">
+                    <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                        <table class="table mb-0" id="datatable_1">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Invoice</th>
+                                    <th>Campaign ID</th>
+                                    <th>Donatur ID</th>
+                                    <th>Amount</th>
+                                    <th>Pray</th>
+                                    <th>Tanggal</th>
+                                    <th>Bukti Dukung</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dataTable">
 
-        @include('admin.dashboard._data_table')
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-center mt-3">
+                        {{ $allDonations->links('pagination::bootstrap-4') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @foreach($allDonations as $donation)
+    <div class="modal fade" id="imageModal{{ $donation->id }}" tabindex="-1" aria-labelledby="imageModalLabel{{ $donation->id }}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageModalLabel{{ $donation->id }}">Bukti Dukung - ID {{ $donation->id }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p><strong>Donation ID: {{ $donation->id }}</strong></p> <!-- Tambahkan ID di sini -->
+                    <img src="{{ $donation->bukti_dukung ?? 'https://seosecret.id/placeholder/600x300/D5D5D5/584959' }}" alt="Bukti Dukung - ID {{ $donation->id }}" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </div>
+    @endforeach
 
+    <!-- Modal Edit -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Edit Donasi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" id="donationId" name="donation_id">
+
+                        <div class="mb-3">
+                            <label for="invoice" class="form-label">Invoice</label>
+                            <input type="text" class="form-control" id="invoice" name="invoice" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="campaign_id" class="form-label">Campaign ID</label>
+                            <input type="text" class="form-control" id="campaign_id" name="campaign_id" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="donatur_id" class="form-label">Donatur ID</label>
+                            <input type="text" class="form-control" id="donatur_id" name="donatur_id" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">Amount</label>
+                            <input type="number" class="form-control" id="amount" name="amount" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="pray" class="form-label">Pray</label>
+                            <textarea class="form-control" id="pray" name="pray" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select" id="status" name="status" required>
+                                <option value="success">Success</option>
+                                <option value="pending">Pending</option>
+                                <option value="failed">Failed</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </main>
+@endsection
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll('.delete-donation').forEach(button => {
-        button.addEventListener('click', function () {
-            let donationId = this.getAttribute('data-id');
+@push('js')
+<script src="{{ asset('assets/js/sweetalert.min.js') }}"></script>
+<script type="text/javascript">
+        let id_kategori = "";
+        $(document).ready(function() {
+            loadTable();
+        });
 
-            Swal.fire({
-                title: "Yakin ingin menghapus donasi ini?",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#d33",
-                cancelButtonColor: "#3085d6",
-                confirmButtonText: "Ya, hapus!",
-                cancelButtonText: "Batal"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    fetch(`/admin/donation/${donationId}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ id: donationId })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.message) {
-                            Swal.fire({
-                                title: 'Deleted!',
-                                text: data.message,
-                                icon: 'success',
-                                confirmButtonText: 'OK'
-                            }).then(() => {
-                                location.reload();
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        Swal.fire({
-                            title: 'Error!',
-                            text: 'There was an error deleting the donation.',
-                            icon: 'error',
-                            confirmButtonText: 'OK'
-                        });
-                        console.error('Error:', error);
-                    });
+        async function loadTable()
+        {
+            let param = {
+                url: "{{ url()->current() }}",
+                method: "GET",
+                data: {
+                    load: 'table'
                 }
+            }
+
+            await transAjax(param).then((result) => {
+                $("#dataTable").html(result);
+            });
+        }
+
+        async function updateDonasi(element) {
+            // Mengambil semua data-* dari tombol yang diklik
+            let id = element.getAttribute('data-id');
+            let invoice = element.getAttribute('data-invoice');
+            let campaignId = element.getAttribute('data-campaign_id');
+            let donaturId = element.getAttribute('data-donatur_id');
+            let amount = element.getAttribute('data-amount');
+            let pray = element.getAttribute('data-pray');
+            let status = element.getAttribute('data-status');
+
+            // Masukkan data ke dalam form modal
+            document.getElementById("donationId").value = id;
+            document.getElementById("invoice").value = invoice;
+            document.getElementById("campaign_id").value = campaignId;
+            document.getElementById("donatur_id").value = donaturId;
+            document.getElementById("amount").value = amount;
+            document.getElementById("pray").value = pray;
+            document.getElementById("status").value = status;
+
+            // Tampilkan modal edit
+            let editModal = new bootstrap.Modal(document.getElementById('editModal'));
+            editModal.show();
+        }
+
+        // Menangani submit form update
+        document.getElementById("editForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            let id = document.getElementById("donationId").value;
+            let formData = new FormData(this);
+
+            let param = {
+                url: `/admin/donation/${id}`,
+                method: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                cache: false,
+            };
+
+            await transAjax(param).then((result) => {
+                loadTable();
+                swal("Berhasil!", "Data donasi berhasil diperbarui", "success");
+                document.getElementById("editForm").reset();
+                let editModal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
+                if (editModal) {
+                    editModal.hide();
+                }
+                document.querySelector('.modal-backdrop')?.remove();
+                }).catch((error) => {
+                        swal("Opps!", "Terjadi kesalahan saat memperbarui data", "error");
             });
         });
-    });
-});
-</script>
 
-@endsection
+        async function hapusDonasi(id)
+        {
+
+            const willDelete = await swal({
+            title: "Yakin?",
+            text: "Apakah Anda yakin untuk mengahpus data ini?",
+            icon: "warning",
+            dangerMode: true,
+            });
+
+            if (willDelete) {
+                let param = {
+                url: '/admin/donation/'+id,
+                method: "DELETE",
+                processData: false,
+                contentType: false,
+                cache: false,
+                }
+
+                await transAjax(param).then((result) => {
+                    loadTable();
+                    swal("Dihapus!", "Data ini berhasil dihapus", "success");
+                }).catch((error) => {
+                    swal("Opps!", "Internal server error!", "warning");
+                });
+            }
+        }
+    </script>
+@endpush

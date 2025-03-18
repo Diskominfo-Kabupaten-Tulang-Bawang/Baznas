@@ -10,4 +10,11 @@ class DonaturService extends BaseService
     {
         parent::__construct($donatur);
     }
+
+    public function search($keyword, $perPage = 10)
+    {
+        return Donatur::where('name', 'LIKE', "%{$keyword}%")
+            ->orWhere('email', 'LIKE', "%{$keyword}%")
+            ->paginate($perPage);
+    }
 }

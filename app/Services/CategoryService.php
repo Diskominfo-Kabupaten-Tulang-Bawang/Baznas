@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Category;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 
 class CategoryService extends BaseService
 {
@@ -73,5 +74,12 @@ class CategoryService extends BaseService
     public function getCategoryById($id)
     {
         return $this->find($id);
+    }
+
+    public function search($keyword, $perPage = 10)
+    {
+        return Category::where('name', 'LIKE', "%{$keyword}%")
+            ->orWhere('description', 'LIKE', "%{$keyword}%")
+            ->paginate($perPage);
     }
 }

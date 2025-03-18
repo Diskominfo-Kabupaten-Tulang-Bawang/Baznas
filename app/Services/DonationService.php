@@ -11,4 +11,11 @@ class DonationService extends BaseService
         parent::__construct($donation);
     }
 
+    public function search($keyword, $perPage = 10)
+    {
+        return Donation::where('id', 'LIKE', "%{$keyword}%")
+            ->orWhere('status', 'LIKE', "%{$keyword}%")
+            ->paginate($perPage);
+    }
+
 }
