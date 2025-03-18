@@ -19,7 +19,7 @@
         </span>
     </td>
     <td>
-        <a href="#" class="edit-button"  id="" data-bs-toggle="modal" onclick="updateDonasi(this)" data-bs-target="#editModal"
+        <a href="#" class="edit-button"  data-bs-toggle="modal" onclick="updateDonasi(this)" data-bs-target="#editModal"
             data-id="{{ $donation->id }}" data-invoice="{{ $donation->invoice }}" data-campaign_id="{{ $donation->campaign_id }}"
             data-donatur_id="{{ $donation->donatur_id }}" data-amount="{{ $donation->amount }}" data-pray="{{ $donation->pray }}"
             data-status="{{ $donation->status }}">

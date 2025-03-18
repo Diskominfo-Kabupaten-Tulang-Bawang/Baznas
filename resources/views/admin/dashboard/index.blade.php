@@ -120,27 +120,6 @@
                         @csrf
                         @method('PUT')
                         <input type="hidden" id="donationId" name="donation_id">
-
-                        <div class="mb-3">
-                            <label for="invoice" class="form-label">Invoice</label>
-                            <input type="text" class="form-control" id="invoice" name="invoice" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="campaign_id" class="form-label">Campaign ID</label>
-                            <input type="text" class="form-control" id="campaign_id" name="campaign_id" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="donatur_id" class="form-label">Donatur ID</label>
-                            <input type="text" class="form-control" id="donatur_id" name="donatur_id" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="amount" class="form-label">Amount</label>
-                            <input type="number" class="form-control" id="amount" name="amount" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="pray" class="form-label">Pray</label>
-                            <textarea class="form-control" id="pray" name="pray" required></textarea>
-                        </div>
                         <div class="mb-3">
                             <label for="status" class="form-label">Status</label>
                             <select class="form-select" id="status" name="status" required>
@@ -184,25 +163,15 @@
         async function updateDonasi(element) {
             // Mengambil semua data-* dari tombol yang diklik
             let id = element.getAttribute('data-id');
-            let invoice = element.getAttribute('data-invoice');
-            let campaignId = element.getAttribute('data-campaign_id');
-            let donaturId = element.getAttribute('data-donatur_id');
-            let amount = element.getAttribute('data-amount');
-            let pray = element.getAttribute('data-pray');
             let status = element.getAttribute('data-status');
 
             // Masukkan data ke dalam form modal
             document.getElementById("donationId").value = id;
-            document.getElementById("invoice").value = invoice;
-            document.getElementById("campaign_id").value = campaignId;
-            document.getElementById("donatur_id").value = donaturId;
-            document.getElementById("amount").value = amount;
-            document.getElementById("pray").value = pray;
             document.getElementById("status").value = status;
 
             // Tampilkan modal edit
-            let editModal = new bootstrap.Modal(document.getElementById('editModal'));
-            editModal.show();
+            // let editModalx = new bootstrap.Modal(document.getElementById('editModal'));
+            // editModalx.show();
         }
 
         // Menangani submit form update
@@ -224,12 +193,12 @@
             await transAjax(param).then((result) => {
                 loadTable();
                 swal("Berhasil!", "Data donasi berhasil diperbarui", "success");
-                document.getElementById("editForm").reset();
+                // document.getElementById("editForm").reset();
                 let editModal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
                 if (editModal) {
                     editModal.hide();
                 }
-                document.querySelector('.modal-backdrop')?.remove();
+                // document.querySelector('.modal-backdrop')?.remove();
                 }).catch((error) => {
                         swal("Opps!", "Terjadi kesalahan saat memperbarui data", "error");
             });
@@ -262,5 +231,6 @@
                 });
             }
         }
+
     </script>
 @endpush

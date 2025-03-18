@@ -75,7 +75,7 @@ class DonationController extends Controller
     public function update(Request $request, $id): JsonResponse
     {
         $request->validate([
-            'amount' => 'required|numeric',
+
             'status' => 'required|string',
         ]);
 
