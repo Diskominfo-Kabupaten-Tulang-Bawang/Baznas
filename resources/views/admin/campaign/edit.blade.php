@@ -76,7 +76,7 @@
 <!-- TinyMCE -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.7.0/tinymce.min.js"></script>
 <script>
-    tinymce.init({ selector:'textarea' });
+    // tinymce.init({ selector:'textarea' });
 
     $(document).ready(function () {
         $("#update-btn").click(function (e) {
