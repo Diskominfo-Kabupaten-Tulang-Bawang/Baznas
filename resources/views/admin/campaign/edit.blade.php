@@ -1,10 +1,10 @@
-@extends('layouts.app', ['title' => 'Edit Campaign - Admin'])
+@extends('layouts.app', ['title' => 'Edit Program - Admin'])
 
 @section('content')
 <div class="container">
     <div class="card">
         <div class="card-header">
-            <h3>Edit Campaign</h3>
+            <h3>Edit Program</h3>
         </div>
         <div class="card-body">
             <form id="edit-form" enctype="multipart/form-data">
@@ -17,8 +17,8 @@
                 </div>
 
                 <div class="form-group mb-3">
-                    <label for="title">Judul Campaign</label>
-                    <input type="text" name="title" class="form-control" value="{{ old('title', $campaign->title) }}" placeholder="Judul Campaign">
+                    <label for="title">Judul Program</label>
+                    <input type="text" name="title" class="form-control" value="{{ old('title', $campaign->title) }}" placeholder="Judul Program">
                     @error('title')
                         <div class="alert alert-danger mt-2">{{ $message }}</div>
                     @enderror

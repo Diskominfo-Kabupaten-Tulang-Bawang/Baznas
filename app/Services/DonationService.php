@@ -2,18 +2,18 @@
 
 namespace App\Services;
 
-use App\Models\Donation;
+use App\Models\Zakat;
 
 class DonationService extends BaseService
 {
-    public function __construct(Donation $donation)
+    public function __construct(Zakat $donation)
     {
         parent::__construct($donation);
     }
 
     public function search($keyword, $perPage = 10)
     {
-        return Donation::where('id', 'LIKE', "%{$keyword}%")
+        return Zakat::where('id', 'LIKE', "%{$keyword}%")
             ->orWhere('status', 'LIKE', "%{$keyword}%")
             ->paginate($perPage);
     }

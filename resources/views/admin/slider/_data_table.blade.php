@@ -2,7 +2,17 @@
 @forelse($sliders as $slider)
 <tr>
     <td>
-        <img src="{{ $slider->image }}" class="me-2 thumb-md align-self-center rounded" alt="Slider Image">
+        {{-- <img src="{{ $slider->image }}" class="me-2 thumb-md align-self-center rounded" alt="Slider Image"> --}}
+
+
+        @if (!empty($slider->image))
+        {{-- @dd($slider->image); --}}
+            <img lazy="loading"
+                src="{{ str_replace('http://dev.localhost:8000/storage/sliders/', '', route('baznas', ['filename' => $slider->image])) }}"
+            alt="Logo" class="img-fluid rounded" style="width: 50px; height: auto;">
+        @else
+            <span class="text-muted">No Image</span>
+        @endif
     </td>
     <td>{{ $slider->link }}</td>
     <td>

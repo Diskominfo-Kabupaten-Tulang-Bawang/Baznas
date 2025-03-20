@@ -72,38 +72,107 @@
 
                 <div class="card-body pt-0">
                     <div id="donationTable">
-                        @include('admin.donation._data_table')
+                        {{-- @include('admin.donation._data_table') --}}
+                        <div class="table-responsive">
+                            <table class="table mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Kategori</th>
+                                        <th>Nama</th>
+                                        <th>Jumlah</th>
+                                        {{-- <th>Doa</th> --}}
+                                        <th>Tanggal</th>
+                                        <th>Details</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dataTable">
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="d-flex justify-content-center mt-3">
+                            <div id="pagination-links">
+                              {{ $allDonations->links('pagination::bootstrap-4') }}
+                            </div>
+                        </div>
                     </div>
+
                 </div><!-- end card-body -->
             </div> <!-- end card -->
         </div><!-- end col -->
     </div><!-- end container -->
 </main>
+@endsection
 
-<script>
-   $(document).ready(function () {
-    $('#filterForm').on('submit', function (e) {
-        e.preventDefault();
+@push('js')
+<script src="{{ asset('assets/js/sweetalert.min.js') }}"></script>
+<script type="text/javascript">
+        let id_kategori = "";
+        $(document).ready(function() {
+            loadTable();
+        });
 
-        $.ajax({
-            data: $(this).serialize(),
-            url: $(this).attr('action'),
-            type: 'GET',
-            success: function (response) {
-                $('#donationTable').html(response.html); // Ambil `html` dari JSON response
-            },
-            error: function (xhr) {
-                Swal.fire({
-                    title: "Error!",
-                    text: xhr.responseJSON?.message || "Terjadi kesalahan.",
-                    icon: "error",
-                    confirmButtonText: "OK"
+
+        async function loadTable(page = 1) {
+            let param = {
+                url: "{{ url()->current() }}?page=" + page,
+                method: "GET",
+                data: {
+                    load: 'table'
+                }
+            };
+
+            await transAjax(param).then((result) => {
+                $("#dataTable").html(result.table);
+                $("#pagination-links").html(result.pagination);
+            }).catch((error) => {
+                console.error("Gagal memuat data:", error);
+            });
+        }
+
+
+        $(document).ready(function () {
+            $(document).on('click', '#pagination-links a', function (e) {
+                e.preventDefault();
+                let url = $(this).attr('href');
+
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function (response) {
+                        $('#dataTable').html(response.table);
+                        $('#pagination-links').html(response.pagination);
+                    },
+                    error: function () {
+                        swal("Gagal!", "Terjadi kesalahan dalam memuat data", "error");
+                    }
                 });
-            }
+            });
+        });
+
+    $(document).ready(function () {
+        $('#filterForm').on('submit', function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                data: $(this).serialize(),
+                url: $(this).attr('action'),
+                type: 'GET',
+                success: function (response) {
+                    $('#dataTable').html(response.table);
+                    $('#pagination-links').html(response.pagination);
+                },
+                error: function (xhr) {
+                    Swal.fire({
+                        title: "Error!",
+                        text: xhr.responseJSON?.message || "Terjadi kesalahan.",
+                        icon: "error",
+                        confirmButtonText: "OK"
+                    });
+                }
+            });
         });
     });
-});
-
-</script>
-
-@endsection
+    </script>
+@endpush

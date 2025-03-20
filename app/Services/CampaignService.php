@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Campaign;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Http\UploadedFile;
 
 class CampaignService extends BaseService
 {
@@ -15,12 +16,27 @@ class CampaignService extends BaseService
 
     public function createCampaign($data)
     {
-        if (isset($data['image'])) {
-            $imagePath = $data['image']->storeAs('public/campaigns', $data['image']->hashName());
-            $data['image'] = basename($imagePath);
+
+        if (!empty($data['image']) && $data['image'] instanceof UploadedFile) {
+            $image = $data['image'];
+
+            // Ubah ekstensi menjadi lowercase
+            $extension = strtolower($image->getClientOriginalExtension());
+
+            // Buat nama file unik dengan UUID
+            $filename = Str::uuid() . '.' . $extension;
+            $imagePath = 'categories/' . $filename;
+
+            // Simpan gambar ke S3
+            Storage::disk('s3')->put($imagePath, file_get_contents($image));
+
+            // Simpan hanya nama file ke database
+            $data['image'] = $filename;
         }
 
-        $data['slug'] = Str::slug($data['title']);
+        // Buat slug dari nama program
+        $data['slug'] = Str::slug($data['title'], '-');
+
         $data['user_id'] = auth()->id();
 
         return $this->store($data);
@@ -33,12 +49,26 @@ class CampaignService extends BaseService
             return false;
         }
 
-        if (!empty($data['image'])) {
-            Storage::delete("public/campaigns/{$campaign->image}");
-            $imagePath = $data['image']->storeAs('public/campaigns', $data['image']->hashName());
-            $data['image'] = basename($imagePath);
+        if (!empty($data['image']) && $data['image'] instanceof UploadedFile) {
+            // Hapus gambar lama jika ada
+            if (!empty($campaign->image)) {
+                Storage::disk('s3')->delete('categories/' . $campaign->image);
+            }
+
+            // Ubah ekstensi menjadi lowercase
+            $extension = strtolower($data['image']->getClientOriginalExtension());
+
+            // Buat nama file unik dengan UUID
+            $filename = Str::uuid() . '.' . $extension;
+            $imagePath = 'categories/' . $filename;
+
+            // Simpan file ke S3
+            Storage::disk('s3')->put($imagePath, file_get_contents($data['image']));
+
+            // Simpan nama file baru ke database
+            $data['image'] = $filename;
         } else {
-            unset($data['image']);
+            unset($data['image']); // Jangan ubah jika tidak ada gambar baru
         }
 
         $data['slug'] = Str::slug($data['title']);
@@ -52,7 +82,7 @@ class CampaignService extends BaseService
     {
         $campaign = $this->find($id);
         if ($campaign) {
-            Storage::delete("public/campaigns/{$campaign->image}");
+            Storage::disk('s3')->delete('categories/' . $campaign->image);
             return $this->destroy($id);
         }
         return false;

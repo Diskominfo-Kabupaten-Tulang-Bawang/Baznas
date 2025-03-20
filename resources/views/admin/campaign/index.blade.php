@@ -9,11 +9,11 @@
                 <div class="card-header">
                     <div class="row align-items-center">
                         <div class="col">
-                            <h4 class="card-title">Program Details</h4>
+                            <h4 class="card-title">Program</h4>
                         </div>
                         <div class="col-auto">
                             <a href="{{ route('admin.campaign.create') }}" class="btn btn-primary">
-                                <i class="fas fa-plus me-1"></i> Add Campaign
+                                <i class="fas fa-plus me-1"></i> Add Program
                             </a>
                         </div>
                     </div>

@@ -1,7 +1,15 @@
 @forelse($categories as $category)
 <tr>
     <td>
-        <img src="{{ $category->image }}" class="thumb-md rounded" alt="{{ $category->name }}">
+
+        @if (!empty($category->image))
+        {{-- @dd($category->image); --}}
+            <img lazy="loading"
+                src="{{ str_replace('http://dev.localhost:8000/storage/categories/', '', route('baznas', ['filename' => $category->image])) }}"
+            alt="Logo" class="img-fluid rounded" style="width: 50px; height: auto;">
+        @else
+            <span class="text-muted">No Image</span>
+        @endif
     </td>
     <td>{{ $category->name }}</td>
     <td>

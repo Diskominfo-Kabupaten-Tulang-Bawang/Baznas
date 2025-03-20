@@ -1,10 +1,10 @@
-@extends('layouts.app', ['title' => 'Tambah Campaign - Admin'])
+@extends('layouts.app', ['title' => 'Tambah Program - Admin'])
 
 @section('content')
 <div class="container mt-4">
     <div class="card">
         <div class="card-header">
-            <h3>Tambah Campaign</h3>
+            <h3>Tambah Program</h3>
         </div>
         <div class="card-body">
             <form id="create-form" enctype="multipart/form-data" novalidate>
@@ -17,9 +17,9 @@
                 </div>
 
                 <div class="form-group mb-3">
-                    <label for="title">Judul Campaign</label>
-                    <input type="text" name="title" class="form-control" value="{{ old('title') }}" placeholder="Judul Campaign" required>
-                    <div class="invalid-feedback">Judul campaign wajib diisi.</div>
+                    <label for="title">Judul Program</label>
+                    <input type="text" name="title" class="form-control" value="{{ old('title') }}" placeholder="Judul Program" required>
+                    <div class="invalid-feedback">Judul program wajib diisi.</div>
                 </div>
 
                 <div class="form-group mb-3">

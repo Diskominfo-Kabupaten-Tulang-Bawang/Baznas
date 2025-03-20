@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\Category;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 
 class CategoryService extends BaseService
 {
@@ -16,11 +16,24 @@ class CategoryService extends BaseService
 
     public function createCategory($data)
     {
-        if (isset($data['image'])) {
-            $imagePath = $data['image']->storeAs('public/categories', $data['image']->hashName());
-            $data['image'] = basename($imagePath);
+        if (!empty($data['image']) && $data['image'] instanceof UploadedFile) {
+            $image = $data['image'];
+
+            // Ubah ekstensi menjadi lowercase
+            $extension = strtolower($image->getClientOriginalExtension());
+
+            // Buat nama file unik dengan UUID
+            $filename = Str::uuid() . '.' . $extension;
+            $imagePath = 'categories/' . $filename;
+
+            // Simpan gambar ke S3
+            Storage::disk('s3')->put($imagePath, file_get_contents($image));
+
+            // Simpan hanya nama file ke database
+            $data['image'] = $filename;
         }
 
+        // Buat slug dari nama kategori
         $data['slug'] = Str::slug($data['name'], '-');
 
         return $this->store($data);
@@ -33,18 +46,26 @@ class CategoryService extends BaseService
             return false;
         }
 
-        // Cek apakah image diinputkan
-        if (!empty($data['image'])) {
+        if (!empty($data['image']) && $data['image'] instanceof UploadedFile) {
             // Hapus gambar lama jika ada
-            if ($category->image) {
-                Storage::delete("public/categories/{$category->image}");
+            if (!empty($category->image)) {
+                Storage::disk('s3')->delete('categories/' . $category->image);
             }
-            // Simpan gambar baru
-            $imagePath = $data['image']->storeAs('public/categories', $data['image']->hashName());
-            $data['image'] = basename($imagePath);
+
+            // Ubah ekstensi menjadi lowercase
+            $extension = strtolower($data['image']->getClientOriginalExtension());
+
+            // Buat nama file unik dengan UUID
+            $filename = Str::uuid() . '.' . $extension;
+            $imagePath = 'categories/' . $filename;
+
+            // Simpan file ke S3
+            Storage::disk('s3')->put($imagePath, file_get_contents($data['image']));
+
+            // Simpan nama file baru ke database
+            $data['image'] = $filename;
         } else {
-            // Jika tidak ada gambar baru, gunakan gambar lama
-            unset($data['image']);
+            unset($data['image']); // Jangan ubah jika tidak ada gambar baru
         }
 
         $data['slug'] = Str::slug($data['name'], '-');
@@ -61,11 +82,10 @@ class CategoryService extends BaseService
         }
 
         // Hapus gambar jika ada
-        if (!empty($category->image) && Storage::exists("public/categories/{$category->image}")) {
-            Storage::delete("public/categories/{$category->image}");
+        if (!empty($category->image)) {
+            Storage::disk('s3')->delete('categories/' . $category->image);
         }
 
-        // Hapus data kategori dari database
         $category->delete();
 
         return response()->json(['status' => 'success', 'message' => 'Kategori berhasil dihapus!']);

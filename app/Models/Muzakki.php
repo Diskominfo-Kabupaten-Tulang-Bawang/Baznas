@@ -29,7 +29,7 @@ class Muzakki extends Authenticatable
         'password',
         'remember_token',
     ];
-    
+
     /**
      * donations
      *
@@ -39,7 +39,12 @@ class Muzakki extends Authenticatable
     {
         return $this->hasMany(Donation::class);
     }
-    
+
+    public function zakat()
+    {
+        return $this->hasMany(Zakat::class);
+    }
+
     /**
      * getAvatarAttribute
      *
@@ -54,5 +59,5 @@ class Muzakki extends Authenticatable
             return 'https://ui-avatars.com/api/?name=' . str_replace(' ', '+', $this->name) . '&background=4e73df&color=ffffff&size=100';
         endif;
     }
-    
+
 }

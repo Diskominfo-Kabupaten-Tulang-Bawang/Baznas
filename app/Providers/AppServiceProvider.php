@@ -11,6 +11,7 @@ use App\Models\Donatur;
 use App\Models\Campaign;
 use App\Models\Donation;
 use App\Models\User;
+use App\Models\Zakat;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->bind(DonationService::class, function ($app) {
-            return new DonationService($app->make(Donation::class));
+            return new DonationService($app->make(Zakat::class));
         });
 
         $this->app->bind(UserService::class, function ($app) {

@@ -22,7 +22,6 @@ class CategoryController extends Controller
 
         if (request()->ajax() && request()->get('load') == 'table') {
             return view('admin.category._data_table', compact('categories'))->render();
-
         }
 
         return view('admin.category.index', compact('categories'));
@@ -33,15 +32,19 @@ class CategoryController extends Controller
         return view('admin.category.create');
     }
 
-
     public function store(Request $request)
     {
         $validated = $request->validate([
             'image' => 'required|image|mimes:jpeg,jpg,png|max:2000',
-            'name'  => 'required|unique:categories'
+            'name'  => 'required|unique:categories,name'
         ]);
 
-        $category = $this->categoryService->createCategory($validated + ['image' => $request->file('image')]);
+        $category = $this->categoryService->createCategory([
+            'name' => $validated['name'],
+            'image' => $request->file('image')
+        ]);
+
+        // dd($category);
 
         return response()->json([
             'status' => $category ? 'success' : 'error',
@@ -55,14 +58,19 @@ class CategoryController extends Controller
         return view('admin.category.edit', compact('category'));
     }
 
-
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'name' => 'required|unique:categories,name,' . $id
+            'name' => 'required|unique:categories,name,' . $id,
+            'image' => 'nullable|image|mimes:jpeg,jpg,png|max:2000'
         ]);
 
-        $updated = $this->categoryService->updateCategory($id, $validated + ['image' => $request->file('image')]);
+        $data = ['name' => $validated['name']];
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image');
+        }
+
+        $updated = $this->categoryService->updateCategory($id, $data);
 
         return response()->json([
             'status' => $updated ? 'success' : 'error',
@@ -79,5 +87,4 @@ class CategoryController extends Controller
             'message' => $deleted ? 'Data Berhasil Dihapus!' : 'Data Gagal Dihapus!'
         ]);
     }
-
 }

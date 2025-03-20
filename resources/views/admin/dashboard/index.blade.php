@@ -43,7 +43,7 @@
                     <div class="card-body">
                         <div class="row d-flex justify-content-center pb-3">
                             <div class="col-9">
-                                <p class="text-dark mb-0 fw-semibold fs-14">Dzakat</p>
+                                <p class="text-dark mb-0 fw-semibold fs-14">Total zakat</p>
                                 <h3 class="mt-2 mb-0 fw-bold">{{ moneyFormat($donations) }}</h3>
                             </div>
                             <div class="col-3 align-self-center">
@@ -59,21 +59,20 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">Donasi Details</h4>
+                    <h4 class="card-title">Detail zakat</h4>
                 </div>
                 <div class="card-body pt-0">
                     <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
                         <table class="table mb-0" id="datatable_1">
                             <thead class="table-light">
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Invoice</th>
-                                    <th>Campaign ID</th>
-                                    <th>Donatur ID</th>
-                                    <th>Amount</th>
-                                    <th>Pray</th>
+                                    <th>No</th>
+                                    <th>Kategori</th>
+                                    <th>Nama</th>
+                                    <th>Jumlah</th>
+                                    {{-- <th>Doa</th> --}}
                                     <th>Tanggal</th>
-                                    <th>Bukti Dukung</th>
+                                    <th>Details</th>
                                     <th>Status</th>
                                     <th>Aksi</th>
                                 </tr>
@@ -83,9 +82,13 @@
                             </tbody>
                         </table>
                     </div>
+
                     <div class="d-flex justify-content-center mt-3">
-                        {{ $allDonations->links('pagination::bootstrap-4') }}
+                        <div id="pagination-links">
+                            {!! $allDonations->links('pagination::bootstrap-4') !!}
+                        </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -95,12 +98,14 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="imageModalLabel{{ $donation->id }}">Bukti Dukung - ID {{ $donation->id }}</h5>
+                    <h5 class="modal-title" id="imageModalLabel{{ $donation->id }}">Details {{ $donation->id }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center">
-                    <p><strong>Donation ID: {{ $donation->id }}</strong></p> <!-- Tambahkan ID di sini -->
+                    {{-- <p><strong>Donation ID: {{ $donation->id }}</strong></p> <!-- Tambahkan ID di sini --> --}}
                     <img src="{{ $donation->bukti_dukung ?? 'https://seosecret.id/placeholder/600x300/D5D5D5/584959' }}" alt="Bukti Dukung - ID {{ $donation->id }}" class="img-fluid">
+                   <tr></tr>
+                    <p class="mt-4">{{ $donation->pray }}</p>
                 </div>
             </div>
         </div>
@@ -159,6 +164,43 @@
                 $("#dataTable").html(result);
             });
         }
+
+        async function loadTable(page = 1) {
+            let param = {
+                url: "{{ url()->current() }}?page=" + page,
+                method: "GET",
+                data: {
+                    load: 'table'
+                }
+            };
+
+            await transAjax(param).then((result) => {
+                $("#dataTable").html(result.table);
+                $("#pagination-links").html(result.pagination);
+            }).catch((error) => {
+                console.error("Gagal memuat data:", error);
+            });
+        }
+
+
+        $(document).ready(function () {
+            $(document).on('click', '#pagination-links a', function (e) {
+                e.preventDefault();
+                let url = $(this).attr('href');
+
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function (response) {
+                        $('#dataTable').html(response.table);
+                        $('#pagination-links').html(response.pagination);
+                    },
+                    error: function () {
+                        swal("Gagal!", "Terjadi kesalahan dalam memuat data", "error");
+                    }
+                });
+            });
+        });
 
         async function updateDonasi(element) {
             // Mengambil semua data-* dari tombol yang diklik

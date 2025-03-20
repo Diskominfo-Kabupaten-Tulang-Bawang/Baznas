@@ -1,15 +1,16 @@
-@forelse ($allDonations as $donation)
+@forelse ($allDonations as $index => $donation)
 <tr>
-    <td>{{ $donation->id }}</td>
-    <td>{{ $donation->invoice }}</td>
-    <td>{{ $donation->campaign_id }}</td>
-    <td>{{ $donation->donatur_id }}</td>
+    {{-- <td>{{ $donation->id }}</td> --}}
+    <td>{{ ($allDonations->currentPage() - 1) * $allDonations->perPage() + $index + 1 }}</td>
+    <td>{{ $donation->category->name ?? 'Tidak Ada Kategori' }}</td>
+    <td>{{ $donation->muzakki->name ?? 'Hamba Allah' }}</td>
     <td>Rp {{ number_format($donation->amount, 0, ',', '.') }}</td>
-    <td>{{ $donation->pray }}</td>
+    {{-- <td>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatum, ea id? Molestias vel blanditiis ipsum ratione. Rerum tenetur est, sunt amet iusto qui aspernatur saepe dicta pariatur voluptatem quos modi.</td> --}}
     <td>{{ $donation->created_at }}</td>
     <td>
         <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal{{ $donation->id }}">
-            <img src="https://seosecret.id/placeholder/600x300/D5D5D5/584959" alt="Bukti Dukung" width="100">
+            {{-- <img src="https://seosecret.id/placeholder/600x300/D5D5D5/584959" alt="Bukti Dukung" width="100"> --}}
+            <span class="badge bg-success">Lihat</span>
         </a>
     </td>
 

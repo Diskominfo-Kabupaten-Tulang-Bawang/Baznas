@@ -25,15 +25,30 @@ class DonationController extends Controller
      */
     public function index(Request $request)
     {
-        $donations = $this->donationService->getAll();
+        $donations = $this->donationService->getPaginate(10);
         $total = $this->donationService->sum('amount', [['status', '=', 'success']]);
-        $allDonations = $this->donationService->getAll();
+        $allDonations = $this->donationService->getPaginate(10);
+
+
+        // if ($request->ajax()) {
+        //     return response()->json([
+        //         'html' => view('admin.donation._data_table', compact('donations', 'total', 'allDonations'))->render(),
+        //         'pagination' => $allDonations->links('pagination::bootstrap-4')->toHtml()
+        //     ]);
+        // }
 
         if ($request->ajax()) {
             return response()->json([
-                'html' => view('admin.donation._data_table', compact('donations', 'total', 'allDonations'))->render()
+                'table' => view('admin.donation._data_table', compact('donations', 'total', 'allDonations'))->render(),
+                'pagination' => $allDonations->links('pagination::bootstrap-4')->toHtml()
             ]);
         }
+
+        // if ($request->ajax()) {
+        //     return response()->json([
+        //         'html' => view('admin.donation._data_table', compact('donations', 'total', 'allDonations'))->render(),
+        //     ]);
+        // }
 
         return view('admin.donation.index', compact('donations', 'total', 'allDonations'));
     }
@@ -61,8 +76,10 @@ class DonationController extends Controller
         $total = $this->donationService->sum('amount', $conditions);
 
         return response()->json([
-            'html' => view('admin.donation._data_table', compact('donations', 'total'))->render()
+            'table' => view('admin.donation._data_table', compact('donations', 'total'))->render()
         ]);
+
+
     }
 
     /**

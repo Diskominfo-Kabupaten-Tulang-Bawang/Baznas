@@ -37,7 +37,7 @@
                         </button>
                     </li>
                     <li class="mx-3 welcome-text">
-                        <h3 class="mb-0 fw-bold text-truncate">Profile</h3>
+                        <h3 class="mb-0 fw-bold text-truncate">{{ $title }}</h3>
                     </li>
                 </ul>
                 <ul class="topbar-item list-unstyled d-inline-flex align-items-center mb-0">
@@ -138,7 +138,7 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('admin.donation.index') }}">
                                 <i class="fas fa-chart-line menu-icon"></i>
-                                <span>Donasi</span>
+                                <span>Zakat</span>
                             </a>
                         </li>
                         <li class="nav-item">

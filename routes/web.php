@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\FileController;
 
 
 Route::get('/', function () {
@@ -42,5 +43,15 @@ Route::prefix('admin')->group(function () {
         //route resource slider
         Route::resource('/slider', SliderController::class, ['except' => ['show'], 'as' => 'admin']);
 
+
+
     });
+    Route::prefix('files')->group(function () {
+        Route::get('baznas/{filename}', [FileController::class, 'baznas'])->name('baznas');
+    });
+
+
+
+
+
 });
