@@ -250,6 +250,7 @@
                 loadTable();
                 swal("Berhasil!", "Data donasi berhasil diperbarui", "success");
                 // document.getElementById("editForm").reset();
+                location.reload();
                 let editModal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
                 if (editModal) {
                     editModal.hide();
@@ -282,6 +283,7 @@
                 await transAjax(param).then((result) => {
                     loadTable();
                     swal("Dihapus!", "Data ini berhasil dihapus", "success");
+                    location.reload();
                 }).catch((error) => {
                     swal("Opps!", "Internal server error!", "warning");
                 });
