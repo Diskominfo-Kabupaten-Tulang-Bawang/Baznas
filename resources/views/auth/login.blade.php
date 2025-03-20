@@ -1,8 +1,8 @@
 @extends('layouts.auth', ['title' => 'Login - Admin'])
 
 @section('content')
-<div class="flex justify-center items-center h-screen px-6" style="background: #56ab2f; background: -webkit-linear-gradient(to right, #a8e063, #56ab2f); background: linear-gradient(to right, #a8e063, #56ab2f);">
-    <div class="p-6 max-w-sm w-full bg-white shadow-md rounded-md">
+<div class="flex justify-center items-center h-screen px-6" style="background: #f7f9fb">
+    <div class="p-6 max-w-sm w-full bg-white shadow-md rounded-md" style="border-top: 3px solid #43A047">
         <div class="flex justify-center items-center">
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Logo_BAZNAS_RI-Hijau-01.png/1167px-Logo_BAZNAS_RI-Hijau-01.png" alt="Badan Amil Zakat Nasional" class="h-24">
         </div>
