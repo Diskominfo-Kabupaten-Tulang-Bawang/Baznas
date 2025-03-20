@@ -55,3 +55,6 @@ Route::get('/zakat', [ZakatController::class, 'index'])->middleware('auth:api');
 Route::post('/zakat', [ZakatController::class, 'store'])->middleware('auth:api');
 Route::put('/zakat/{id}', [ZakatController::class, 'update'])->middleware('auth:api');
 Route::delete('/zakat/{invoice}', [ZakatController::class, 'delete'])->middleware('auth:api');
+
+//STREAM FILE
+Route::get('/stream/{struk}/{filename}', StreamController::class)->middleware('auth:api');

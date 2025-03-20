@@ -25,10 +25,10 @@ class DatabaseSeeder extends Seeder
             'email'     => 'muzakki@gmail.com',
             'password'  => Hash::make('devkh123'),
         ]);
-        DB::table('donaturs')->insert([
-            'name'      => 'Muzakki',
-            'email'     => 'muzakki@gmail.com',
-            'password'  => Hash::make('devkh123'),
-        ]);
+        // DB::table('donaturs')->insert([
+        //     'name'      => 'Muzakki',
+        //     'email'     => 'muzakki@gmail.com',
+        //     'password'  => Hash::make('devkh123'),
+        // ]);
     }
 }
