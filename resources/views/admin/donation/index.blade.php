@@ -83,7 +83,7 @@
                                         <th>Jumlah</th>
                                         {{-- <th>Doa</th> --}}
                                         <th>Tanggal</th>
-                                        <th>Details</th>
+                                        <th>Detail</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
