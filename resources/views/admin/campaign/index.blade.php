@@ -20,88 +20,124 @@
                 </div>
                 <div class="card-body pt-0">
                     <div class="table-responsive" id="campaignTable">
-                        @include('admin.campaign._data_table')
+                        {{-- @include('admin.campaign._data_table') --}}
+                        <table class="table mb-0" id="datatable_1">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Gambar</th>
+                                    <th>Judul Program</th>
+                                    <th>Kategori</th>
+                                    <th>Target Donasi</th>
+                                    <th>Tanggal Berakhir</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dataTable">
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </main>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<script>
-    function loadCampaigns() {
-        $.ajax({
-            url: "{{ route('admin.campaign.index') }}",
-            type: "GET",
-            dataType: "html",
-            data: {
-                load: 'campign'
-            },
-            success: function(response) {
-                $('#campaignTable').html(response);
-            },
-            error: function(xhr) {
-                console.log(xhr.responseText);
-            }
-        });
-    }
-
-    function destroy(button) {
-        var id = button.getAttribute("data-id");
-        var token = document.querySelector("meta[name='csrf-token']").getAttribute("content");
-
-        Swal.fire({
-            title: 'APAKAH KAMU YAKIN?',
-            text: "INGIN MENGHAPUS DATA INI!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            cancelButtonText: 'BATAL',
-            confirmButtonText: 'YA, HAPUS!',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                fetch(`/admin/campaign/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': token
-                    },
-                    body: JSON.stringify({ id: id })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === "success") {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'BERHASIL!',
-                            text: 'DATA BERHASIL DIHAPUS!',
-                            showConfirmButton: false,
-                            timer: 3000
-                        }).then(() => {
-                            loadCampaigns();
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'GAGAL!',
-                            text: 'DATA GAGAL DIHAPUS!',
-                            showConfirmButton: false,
-                            timer: 3000
-                        });
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-            }
-        });
-    }
-
-    $(document).ready(function() {
-        loadCampaigns();
-    });
-</script>
-
 @endsection
+
+
+@push('js')
+<script src="{{ asset('assets/js/sweetalert.min.js') }}"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    loadTable();
+
+    $(document).on('click', '.edit-data', function() {
+        let id = $(this).data('id');
+        let link = $(this).data('link');
+
+        $('#data-id').val(id);
+        $('#data-link').val(link);
+
+        let editModal = new bootstrap.Modal(document.getElementById('dataModal'));
+        editModal.show();
+    });
+
+    $(document).on('click', '.delete-data', function() {
+        let id = $(this).data('id');
+        hapusData(id);
+    });
+
+    $('#data-form').on('submit', function(event) {
+        event.preventDefault();
+        $('#save-data').prop('disabled', true).text('Menyimpan...');
+
+        let id = $('#data-id').val();
+        let formData = new FormData(this);
+        let url = id ? `/admin/campaign/${id}` : "{{ route('admin.campaign.store') }}";
+
+        if (id) formData.append('_method', 'PUT');
+
+        $.ajax({
+            url: url,
+            method: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function() {
+                loadTable();
+                swal("Berhasil!", "campaign berhasil diperbarui", "success");
+                $('#data-form')[0].reset();
+                let modal = bootstrap.Modal.getInstance(document.getElementById('dataModal'));
+                modal.hide();
+            },
+            error: function() {
+                swal("Opps!", "Terjadi kesalahan", "error");
+            },
+            complete: function() {
+                $('#save-data').prop('disabled', false).text('Simpan');
+            }
+        });
+    });
+});
+
+function loadTable() {
+    $.ajax({
+        url: "{{ url()->current() }}",
+        method: "GET",
+        data: { load: 'table' },
+        success: function(result) {
+            $('#dataTable').html(result);
+        }
+    });
+}
+
+
+async function hapusData(id) {
+    const willDelete = await swal({
+        title: "Yakin?",
+        text: "Apakah Anda yakin untuk menghapus data ini?",
+        icon: "warning",
+        buttons: 'ok',
+        dangerMode: true,
+    });
+
+    if (willDelete) {
+        let param = {
+            url: `/admin/campaign/${id}`,
+            method: "DELETE",
+            processData: false,
+            contentType: false,
+            cache: false,
+        };
+
+        try {
+            await transAjax(param);
+            loadTable();
+            swal("Dihapus!", "Data ini berhasil dihapus", "success");
+        } catch (error) {
+            swal("Opps!", "Terjadi kesalahan saat menghapus data", "error");
+        }
+    }
+}
+
+</script>
+@endpush

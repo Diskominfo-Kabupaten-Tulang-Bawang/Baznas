@@ -11,7 +11,7 @@ class Zakat extends Model
 {
     use HasFactory, SoftDeletes;
     protected $fillable = [
-        'invoice', 'category_id', 'muzakki_id', 'amount', 'pray', 'status', 'struk'
+        'invoice', 'category_id', 'muzakki_id', 'amount', 'pray', 'status', 'struk', 'alasan_penolakan'
     ];
 
     public function category()
@@ -25,12 +25,12 @@ class Zakat extends Model
     }
 
     public function getCreatedAtAttribute($date)
-    {   
+    {
         return Carbon::parse($date)->format('d-M-Y');
     }
 
     public function getUpdatedAtAttribute($date)
-    {   
+    {
         return Carbon::parse($date)->format('d-M-Y');
     }
 }

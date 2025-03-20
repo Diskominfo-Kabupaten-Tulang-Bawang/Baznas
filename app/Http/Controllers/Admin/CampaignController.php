@@ -54,10 +54,11 @@ class CampaignController extends Controller
             'image'           => 'required|image|mimes:png,jpg,jpeg',
             'title'           => 'required',
             'category_id'     => 'required',
-            'target_donation' => 'required|numeric',
+            'target_donation' => 'required|numeric|min:1000',
             'max_date'        => 'required|date',
             'description'     => 'required'
         ]);
+
 
         $campaign = $this->campaignService->createCampaign($validated + ['image' => $request->file('image')]);
 

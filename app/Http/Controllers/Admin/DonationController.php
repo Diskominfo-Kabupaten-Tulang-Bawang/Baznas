@@ -89,23 +89,40 @@ class DonationController extends Controller
      * @param int $id
      * @return JsonResponse
      */
-    public function update(Request $request, $id): JsonResponse
+    // public function update(Request $request, $id): JsonResponse
+    // {
+    //     $request->validate([
+
+    //         'status' => 'required|string',
+    //     ]);
+
+    //     $donation = $this->donationService->find($id);
+
+    //     if (!$donation) {
+    //         return response()->json(['error' => 'Donation not found'], 404);
+    //     }
+
+    //     $this->donationService->update($donation, $request->all());
+
+    //     return response()->json(['success' => 'Donation updated successfully']);
+    // }
+
+
+    public function update(Request $request, $id)
     {
         $request->validate([
-
-            'status' => 'required|string',
+            'status' => 'required|in:success,failed',
+            'alasan_penolakan' => $request->status == 'failed' ? 'required|string' : 'nullable|string',
         ]);
 
-        $donation = $this->donationService->find($id);
+        $donation =  $this->donationService->find($id);
+        $donation->status = $request->status;
+        $donation->alasan_penolakan = $request->status == 'failed' ? $request->alasan_penolakan : null;
+        $donation->save();
 
-        if (!$donation) {
-            return response()->json(['error' => 'Donation not found'], 404);
-        }
-
-        $this->donationService->update($donation, $request->all());
-
-        return response()->json(['success' => 'Donation updated successfully']);
+        return redirect()->back()->with('success', 'Data berhasil diperbarui');
     }
+
 
     /**
      * Menghapus donasi (AJAX support).

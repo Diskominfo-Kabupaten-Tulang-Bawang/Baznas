@@ -16,14 +16,16 @@
     </td>
     <td>{{ $slider->link }}</td>
     <td>
-        <a href="#" class="edit-data" data-id="{{ $slider->id }}" data-name="{{ $slider->link }}">
-            <i class="las la-pen text-secondary fs-18"></i>
-        </a>
-
-
-        <button class="delete-slider border-0 bg-transparent" onclick="hapusData({{ $slider->id }})">
-            <i class="las la-trash-alt text-secondary fs-18"></i>
-        </button>
+        <span class="badge bg-primary">
+            <a href="#" class="edit-data" data-id="{{ $slider->id }}" data-name="{{ $slider->link }}">
+                <i class="las la-pen text-white  fs-18"></i>
+            </a>
+        </span>
+        <span class="badge bg-danger">
+            <button class="delete-slider border-0 bg-transparent" onclick="hapusData({{ $slider->id }})">
+                <i class="las la-trash-alt text-white  fs-18"></i>
+            </button>
+        </span>
     </td>
 </tr>
 @empty

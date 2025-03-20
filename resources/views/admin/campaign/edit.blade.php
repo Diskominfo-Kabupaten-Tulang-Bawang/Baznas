@@ -44,12 +44,20 @@
                     @enderror
                 </div>
 
-                <div class="form-group mb-3">
+                {{-- <div class="form-group mb-3">
                     <label for="target_donation">Target Donasi</label>
                     <input type="number" name="target_donation" class="form-control" value="{{ old('target_donation', $campaign->target_donation) }}" placeholder="Target Donasi, Ex: 10000000">
                     @error('target_donation')
                         <div class="alert alert-danger mt-2">{{ $message }}</div>
                     @enderror
+                </div> --}}
+                <div class="form-group mb-3">
+                    <label for="target_donation">Target Donasi</label>
+                    <input type="text" id="target_donation_display" class="form-control"
+                        placeholder="Target Donasi, Ex: 10.000.000" required>
+                    <input type="hidden" id="target_donation" name="target_donation"
+                        value="{{ old('target_donation', $donation->target_donation ?? '') }}">
+                    <div class="invalid-feedback">Target donasi wajib diisi dan harus berupa angka.</div>
                 </div>
 
                 <div class="form-group mb-3">
@@ -126,6 +134,27 @@
                     }
                 }
             });
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        let displayInput = document.getElementById("target_donation_display");
+        let hiddenInput = document.getElementById("target_donation");
+
+        if (hiddenInput.value) {
+            let formattedValue = new Intl.NumberFormat("id-ID").format(hiddenInput.value);
+            displayInput.value = formattedValue;
+        }
+
+        displayInput.addEventListener("input", function (e) {
+            let rawValue = e.target.value.replace(/\D/g, "");
+            e.target.value = new Intl.NumberFormat("id-ID").format(rawValue);
+            hiddenInput.value = rawValue;
+        });
+
+        // Event sebelum form dikirim
+        document.querySelector("form").addEventListener("submit", function (e) {
+            hiddenInput.value = displayInput.value.replace(/\./g, "").trim();
         });
     });
 </script>

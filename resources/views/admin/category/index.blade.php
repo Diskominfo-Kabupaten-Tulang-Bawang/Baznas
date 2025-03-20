@@ -8,7 +8,7 @@
                 <div class="card-header">
                     <div class="row align-items-center">
                         <div class="col">
-                            <h4 class="card-title">Kategori Details</h4>
+                            <h4 class="card-title">Kategori Detail</h4>
                         </div>
                         <div class="col-auto">
                             <button class="btn btn-primary mb-2" data-bs-toggle="modal" data-bs-target="#categoryModal">

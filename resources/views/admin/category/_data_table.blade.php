@@ -5,7 +5,7 @@
         @if (!empty($category->image))
         {{-- @dd($category->image); --}}
             <img lazy="loading"
-                src="{{ route('stream', ['filename' => $category->image]) }}"
+                src="{{ route('stream', [ 'dir' => 'categories', 'filename' => $category->image]) }}"
             alt="Logo" class="img-fluid rounded" style="width: 50px; height: auto;">
         @else
             <span class="text-muted">No Image</span>
@@ -13,13 +13,16 @@
     </td>
     <td>{{ $category->name }}</td>
     <td>
-        <a href="#" class="edit-category" data-id="{{ $category->id }}" data-name="{{ $category->name }}">
-            <i class="las la-pen text-secondary fs-18"></i>
-        </a>
-
-        <button class="delete-category border-0 bg-transparent" data-id="{{ $category->id }}">
-            <i class="las la-trash-alt text-secondary fs-18"></i>
-        </button>
+        <span class="badge bg-primary">
+            <a href="#" class="edit-category" data-id="{{ $category->id }}" data-name="{{ $category->name }}">
+                <i class="las la-pen text-white fs-18"></i>
+            </a>
+        </span>
+        <span class="badge bg-danger">
+            <button class="delete-category border-0 bg-transparent" data-id="{{ $category->id }}">
+                <i class="las la-trash-alt text-white fs-18"></i>
+            </button>
+        </span>
     </td>
 </tr>
 @empty

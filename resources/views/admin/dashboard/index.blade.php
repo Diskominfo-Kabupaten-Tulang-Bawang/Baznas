@@ -127,13 +127,14 @@
                         <input type="hidden" id="donationId" name="donation_id">
                         <div class="mb-3">
                             <label for="status" class="form-label">Status</label>
-                            <select class="form-select" id="status" name="status" required>
+                            <select class="form-select" id="status_zakat" name="status" required>
+                                <option value="" selected>-- Pilih Status --</option>
                                 <option value="success">Terima</option>
                                 <option value="failed">Tolak</option>
                             </select>
                         </div>
                         <div class="mb-3 alasan-penolakan d-none">
-                            <label for="">Alalan penolakan</label>
+                            <label for="alasan">Alalan penolakan</label>
                             <textarea name="alasan_penolakan" class="form-control">
 
                             </textarea>
@@ -154,7 +155,7 @@
         $(document).ready(function() {
             loadTable();
 
-            $('#status').change(function() {
+            $('#status_zakat').change(function() {
                 if(this.value == 'failed') {
                     $('.alasan-penolakan').removeClass('d-none');
                 }else {

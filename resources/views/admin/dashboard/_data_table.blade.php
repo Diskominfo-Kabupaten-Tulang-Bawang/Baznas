@@ -13,9 +13,13 @@
     </td>
 
     <td>
-        <span class="badge bg-{{ $donation->status == 'success' ? 'success' : ($donation->status == 'pending' ? 'warning' : 'danger') }}">
-            {{ ucfirst($donation->status) }}
-        </span>
+        @if($donation->status == 'success')
+            <span class="badge bg-primary">diterima</span>
+            @elseif ($donation->status == 'pending')
+            <span class="badge bg-warning">pending</span>
+            @else
+            <span class="badge bg-danger">tolak</span>
+        @endif
     </td>
     <td>
         <span class="badge bg-primary">
