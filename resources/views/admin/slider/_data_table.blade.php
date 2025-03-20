@@ -8,7 +8,7 @@
         @if (!empty($slider->image))
         {{-- @dd($slider->image); --}}
             <img lazy="loading"
-                src="{{ str_replace('http://dev.localhost:8000/storage/sliders/', '', route('baznas', ['filename' => $slider->image])) }}"
+                src="{{ route('stream', ['dir' => 'categories','filename' => $slider->image]) }}"
             alt="Logo" class="img-fluid rounded" style="width: 50px; height: auto;">
         @else
             <span class="text-muted">No Image</span>

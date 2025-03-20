@@ -53,7 +53,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="link" class="form-label">Link</label>
-                            <input type="url" name="link" id="data-link" class="form-control" placeholder="Masukkan URL" required>
+                            <input type="text" name="link" class="form-control" placeholder="Masukkan URL">
                         </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>

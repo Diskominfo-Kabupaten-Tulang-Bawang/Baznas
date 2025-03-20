@@ -5,7 +5,7 @@
         @if (!empty($category->image))
         {{-- @dd($category->image); --}}
             <img lazy="loading"
-                src="{{ str_replace('http://dev.localhost:8000/storage/categories/', '', route('baznas', ['filename' => $category->image])) }}"
+                src="{{ route('stream', ['filename' => $category->image]) }}"
             alt="Logo" class="img-fluid rounded" style="width: 50px; height: auto;">
         @else
             <span class="text-muted">No Image</span>

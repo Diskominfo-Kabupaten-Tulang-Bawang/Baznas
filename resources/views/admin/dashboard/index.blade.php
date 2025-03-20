@@ -72,7 +72,7 @@
                                     <th>Jumlah</th>
                                     {{-- <th>Doa</th> --}}
                                     <th>Tanggal</th>
-                                    <th>Details</th>
+                                    <th>Detail</th>
                                     <th>Status</th>
                                     <th>Aksi</th>
                                 </tr>
@@ -98,14 +98,14 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="imageModalLabel{{ $donation->id }}">Details {{ $donation->id }}</h5>
+                    <h5 class="modal-title" id="imageModalLabel{{ $donation->id }}">Detail zakat</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center">
                     {{-- <p><strong>Donation ID: {{ $donation->id }}</strong></p> <!-- Tambahkan ID di sini --> --}}
-                    <img src="{{ $donation->bukti_dukung ?? 'https://seosecret.id/placeholder/600x300/D5D5D5/584959' }}" alt="Bukti Dukung - ID {{ $donation->id }}" class="img-fluid">
+                    <img src="{{ route('stream', ['dir' => 'struk','filename' => $donation->struk]) }}" alt="Bukti Dukung - ID {{ $donation->id }}" class="img-fluid rounded">
                    <tr></tr>
-                    <p class="mt-4">{{ $donation->pray }}</p>
+                   <textarea name="" class="form-control mt-2" readonly>{{ $donation->pray }}</textarea>
                 </div>
             </div>
         </div>
@@ -114,7 +114,7 @@
 
     <!-- Modal Edit -->
     <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="editModalLabel">Edit Donasi</h5>
@@ -128,12 +128,17 @@
                         <div class="mb-3">
                             <label for="status" class="form-label">Status</label>
                             <select class="form-select" id="status" name="status" required>
-                                <option value="success">Success</option>
-                                <option value="pending">Pending</option>
-                                <option value="failed">Failed</option>
+                                <option value="success">Terima</option>
+                                <option value="failed">Tolak</option>
                             </select>
                         </div>
-                        <button type="submit" class="btn btn-primary">Save changes</button>
+                        <div class="mb-3 alasan-penolakan d-none">
+                            <label for="">Alalan penolakan</label>
+                            <textarea name="alasan_penolakan" class="form-control">
+
+                            </textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Kirim</button>
                     </form>
                 </div>
             </div>
@@ -148,6 +153,14 @@
         let id_kategori = "";
         $(document).ready(function() {
             loadTable();
+
+            $('#status').change(function() {
+                if(this.value == 'failed') {
+                    $('.alasan-penolakan').removeClass('d-none');
+                }else {
+                    $('.alasan-penolakan').addClass('d-none');
+                }
+            });
         });
 
         async function loadTable()

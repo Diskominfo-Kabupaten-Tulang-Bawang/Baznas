@@ -10,7 +10,7 @@
         <tbody>
             @forelse($donaturs as $donatur)
                 <tr>
-                    <td><img src="{{ $donatur->avatar }}" class="avatar-xs rounded-circle"></td>
+                    <td><img src="{{ $donatur->avatar }}" class="avatar-xs rounded-circle" width="10%"></td>
                     <td>{{ $donatur->name }}</td>
                     <td>{{ $donatur->email }}</td>
                 </tr>

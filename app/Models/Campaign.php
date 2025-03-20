@@ -64,8 +64,8 @@ class Campaign extends Model
      * @param  mixed $image
      * @return void
      */
-    public function getImageAttribute($image)
-    {
-        return asset('storage/campaigns/'.$image);
-    }
+    // public function getImageAttribute($image)
+    // {
+    //     return asset('storage/campaigns/'.$image);
+    // }
 }

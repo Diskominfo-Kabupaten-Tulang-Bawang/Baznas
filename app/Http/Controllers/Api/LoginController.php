@@ -29,19 +29,38 @@ class LoginController extends Controller
 
         $muzakki = Muzakki::where('email', $request->email)->first();
 
-        if(!$muzakki) {
-            $muzakki = Muzakki::create([
-                'name'      => $request->name ?? 'Muzakki',
-                'email'     => $request->email,
-                'password'  => Hash::make($request->password),
-            ]);
-        }
-
-        if (!Hash::check($request->password, $muzakki->password)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Login Failed!',
-            ], 401);
+        $passwordInfo = password_get_info($request->password);
+        if ($passwordInfo['algo'] === null) {
+            $password = Hash::make($request->password);
+            if(!$muzakki) {
+                $muzakki = Muzakki::create([
+                    'name'      => $request->name ?? 'Muzakki',
+                    'email'     => $request->email,
+                    'password'  => $password,
+                ]);
+            }
+    
+            if (!Hash::check($request->password, $muzakki->password)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Password salah!',
+                ], 401);
+            }
+        } else { 
+            if(!$muzakki) {
+                $muzakki = Muzakki::create([
+                    'name'      => $request->name ?? 'Muzakki',
+                    'email'     => $request->email,
+                    'password'  => $request->password,
+                ]);
+            }
+    
+            if ($request->password !== $muzakki->password) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Password salah!',
+                ], 401);
+            }
         }
 
         return response()->json([

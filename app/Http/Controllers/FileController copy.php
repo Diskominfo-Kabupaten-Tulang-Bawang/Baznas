@@ -2,26 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
+
 class FileController extends Controller
 {
-    /**
-     * Handle the incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function __invoke(Request $request, $filename)
+    public function baznas($dir, $filename)
     {
+        dd('ok');
+        // Cegah akses file berbahaya
         $extension = pathinfo($filename, PATHINFO_EXTENSION);
         if (!in_array($extension, ['jpg', 'jpeg', 'png'])) {
             abort(404);
         }
 
         // Path file di MinIO
-        $path = "categories/{$filename}";
+        $path = $dir . '/' . $filename;
 
         // Periksa apakah file ada di MinIO
         if (!Storage::disk('s3')->exists($path)) {

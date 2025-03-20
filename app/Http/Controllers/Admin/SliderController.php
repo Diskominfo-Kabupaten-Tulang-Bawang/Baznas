@@ -42,7 +42,7 @@ class SliderController extends Controller
     {
         $data = $request->validate([
             'image' => 'required|image|mimes:jpeg,jpg,png|max:2000',
-            'link'  => 'required|string|max:255'
+            'link'  => 'string|max:255'
         ]);
 
         $this->sliderService->store($data);

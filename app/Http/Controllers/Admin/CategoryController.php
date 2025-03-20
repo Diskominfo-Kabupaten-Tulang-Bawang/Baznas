@@ -27,11 +27,6 @@ class CategoryController extends Controller
         return view('admin.category.index', compact('categories'));
     }
 
-    public function create()
-    {
-        return view('admin.category.create');
-    }
-
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -52,11 +47,6 @@ class CategoryController extends Controller
         ]);
     }
 
-    public function edit($id)
-    {
-        $category = $this->categoryService->getCategoryById($id);
-        return view('admin.category.edit', compact('category'));
-    }
 
     public function update(Request $request, $id)
     {

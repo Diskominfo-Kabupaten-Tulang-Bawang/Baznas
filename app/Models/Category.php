@@ -34,8 +34,8 @@ class Category extends Model
      * @param  mixed $image
      * @return void
      */
-    public function getImageAttribute($image)
-    {
-        return asset('storage/categories/'.$image);
-    }
+    // public function getImageAttribute($image)
+    // {
+    //     return asset('storage/categories/'.$image);
+    // }
 }

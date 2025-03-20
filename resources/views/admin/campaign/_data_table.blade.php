@@ -17,11 +17,11 @@
                         @if (!empty($campaign->image))
                         {{-- @dd($category->image); --}}
                             <img lazy="loading"
-                                src="{{ str_replace('http://dev.localhost:8000/storage/campaigns/', '', route('baznas', ['filename' => $campaign->image])) }}"
+                                src="{{ route('stream', ['dir' => 'struk', 'filename' => $campaign->image]) }}"
                             alt="Logo" class="img-fluid rounded" style="width: 50px; height: auto;">
                         @else
                             <span class="text-muted">No Image</span>
-                        @endif
+                        @endif  
                     </td>
                     <td class="d-flex align-items-center">
                         <div class="d-flex align-items-center">

@@ -13,7 +13,7 @@
                         </div>
                         <div class="col-auto">
                             <a href="{{ route('admin.campaign.create') }}" class="btn btn-primary">
-                                <i class="fas fa-plus me-1"></i> Add Program
+                                <i class="fas fa-plus me-1"></i> Tambah Program
                             </a>
                         </div>
                     </div>
@@ -37,6 +37,9 @@
             url: "{{ route('admin.campaign.index') }}",
             type: "GET",
             dataType: "html",
+            data: {
+                load: 'campign'
+            },
             success: function(response) {
                 $('#campaignTable').html(response);
             },

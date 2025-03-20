@@ -73,7 +73,7 @@ return [
 
         'muzakkis' => [
             'driver' => 'eloquent',
-            'model' => App\Models\Donatur::class,
+            'model' => App\Models\Muzakki::class,
         ],
     ],
 

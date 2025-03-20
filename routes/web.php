@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Api\StreamController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FileController;
 
@@ -46,12 +47,7 @@ Route::prefix('admin')->group(function () {
 
 
     });
-    Route::prefix('files')->group(function () {
-        Route::get('baznas/{filename}', [FileController::class, 'baznas'])->name('baznas');
-    });
 
-
-
-
-
+    //route untuk get file
+    Route::get('stream/{dir}/{filename}', StreamController::class)->name('stream');
 });
