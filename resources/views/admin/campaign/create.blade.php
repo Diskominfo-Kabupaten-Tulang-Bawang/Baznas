@@ -129,7 +129,7 @@
 
         // Event sebelum form dikirim
         document.querySelector("form").addEventListener("submit", function (e) {
-            hiddenInput.value = displayInput.value.replace(/\./g, "").trim();
+            hiddenInput.value = displayInput.value.replace(/\./g, "").trim(); // Pastikan angka murni di input hidden
         });
     });
 </script>
