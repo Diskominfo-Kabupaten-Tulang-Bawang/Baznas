@@ -15,6 +15,7 @@ class CreateMuzakkisTable extends Migration
     {
         Schema::create('muzakkis', function (Blueprint $table) {
             $table->id();
+            $table->string('user_id')->nullable();
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();

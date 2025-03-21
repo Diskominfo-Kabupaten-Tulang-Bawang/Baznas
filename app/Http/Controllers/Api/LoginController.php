@@ -34,9 +34,11 @@ class LoginController extends Controller
             $password = Hash::make($request->password);
             if(!$muzakki) {
                 $muzakki = Muzakki::create([
-                    'name'      => $request->name ?? 'Muzakki',
-                    'email'     => $request->email,
-                    'password'  => $password,
+                    'user_id'   => $request->user_id,
+                    'name'          => $request->name ?? 'Muzakki',
+                    'nama_opd'      => $request->opd,
+                    'email'         => $request->email,
+                    'password'      => $password,
                 ]);
             }
     
@@ -49,6 +51,7 @@ class LoginController extends Controller
         } else { 
             if(!$muzakki) {
                 $muzakki = Muzakki::create([
+                    'user_id'   => $request->user_id,
                     'name'      => $request->name ?? 'Muzakki',
                     'email'     => $request->email,
                     'password'  => $request->password,
