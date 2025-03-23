@@ -19,6 +19,7 @@ class Zakat extends Model
         return $this->belongsTo(Category::class);
     }
 
+
     public function muzakki()
     {
         return $this->belongsTo(Muzakki::class);

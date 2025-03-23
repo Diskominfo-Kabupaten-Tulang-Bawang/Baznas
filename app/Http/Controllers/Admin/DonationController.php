@@ -23,19 +23,42 @@ class DonationController extends Controller
      * @param Request $request
      * @return View|JsonResponse
      */
+    // public function index(Request $request)
+    // {
+    //     $donations = $this->donationService->getPaginate(10);
+    //     $total = $this->donationService->sum('amount', [['status', '=', 'success']]);
+    //     $allDonations = $this->donationService->getPaginate(10);
+
+
+    //     // if ($request->ajax()) {
+    //     //     return response()->json([
+    //     //         'html' => view('admin.donation._data_table', compact('donations', 'total', 'allDonations'))->render(),
+    //     //         'pagination' => $allDonations->links('pagination::bootstrap-4')->toHtml()
+    //     //     ]);
+    //     // }
+
+    //     if ($request->ajax()) {
+    //         return response()->json([
+    //             'table' => view('admin.donation._data_table', compact('donations', 'total', 'allDonations'))->render(),
+    //             'pagination' => $allDonations->links('pagination::bootstrap-4')->toHtml()
+    //         ]);
+    //     }
+
+    //     // if ($request->ajax()) {
+    //     //     return response()->json([
+    //     //         'html' => view('admin.donation._data_table', compact('donations', 'total', 'allDonations'))->render(),
+    //     //     ]);
+    //     // }
+
+    //     return view('admin.donation.index', compact('donations', 'total', 'allDonations'));
+    // }
+
     public function index(Request $request)
     {
         $donations = $this->donationService->getPaginate(10);
         $total = $this->donationService->sum('amount', [['status', '=', 'success']]);
         $allDonations = $this->donationService->getPaginate(10);
-
-
-        // if ($request->ajax()) {
-        //     return response()->json([
-        //         'html' => view('admin.donation._data_table', compact('donations', 'total', 'allDonations'))->render(),
-        //         'pagination' => $allDonations->links('pagination::bootstrap-4')->toHtml()
-        //     ]);
-        // }
+        $categories = \App\Models\Category::all(); // Ambil semua kategori
 
         if ($request->ajax()) {
             return response()->json([
@@ -44,14 +67,9 @@ class DonationController extends Controller
             ]);
         }
 
-        // if ($request->ajax()) {
-        //     return response()->json([
-        //         'html' => view('admin.donation._data_table', compact('donations', 'total', 'allDonations'))->render(),
-        //     ]);
-        // }
-
-        return view('admin.donation.index', compact('donations', 'total', 'allDonations'));
+        return view('admin.donation.index', compact('donations', 'total', 'allDonations', 'categories'));
     }
+
 
     /**
      * Menyaring donasi berdasarkan rentang tanggal (AJAX support).
@@ -82,46 +100,25 @@ class DonationController extends Controller
 
     }
 
-    /**
-     * Memperbarui donasi (AJAX support).
-     *
-     * @param Request $request
-     * @param int $id
-     * @return JsonResponse
-     */
-    // public function update(Request $request, $id): JsonResponse
-    // {
-    //     $request->validate([
-
-    //         'status' => 'required|string',
-    //     ]);
-
-    //     $donation = $this->donationService->find($id);
-
-    //     if (!$donation) {
-    //         return response()->json(['error' => 'Donation not found'], 404);
-    //     }
-
-    //     $this->donationService->update($donation, $request->all());
-
-    //     return response()->json(['success' => 'Donation updated successfully']);
-    // }
-
-
-    public function update(Request $request, $id)
+    public function filterCategory(Request $request): JsonResponse
     {
         $request->validate([
-            'status' => 'required|in:success,failed',
-            'alasan_penolakan' => $request->status == 'failed' ? 'required|string' : 'nullable|string',
+            'category' => 'nullable|exists:categories,id',
         ]);
 
-        $donation =  $this->donationService->find($id);
-        $donation->status = $request->status;
-        $donation->alasan_penolakan = $request->status == 'failed' ? $request->alasan_penolakan : null;
-        $donation->save();
+        if ($request->filled('category')) {
+            $conditions[] = ['category_id', '=', $request->category];
+        }
 
-        return redirect()->back()->with('success', 'Data berhasil diperbarui');
+        $donations = $this->donationService->getPaginate(10, $conditions);
+        $total = $this->donationService->sum('amount', $conditions);
+
+        return response()->json([
+            'table' => view('admin.donation._data_table', compact('donations', 'total'))->render(),
+            'pagination' => $donations->links('pagination::bootstrap-4')->render(),
+        ]);
     }
+
 
 
     /**

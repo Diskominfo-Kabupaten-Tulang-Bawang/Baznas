@@ -62,12 +62,31 @@
                                     </div>
                                 @enderror
                             </div>
+
                             <div class="col-md-4 d-flex align-items-end">
                                 <button class="btn btn-success w-100 me-2" type="submit"><i class="fas fa-filter me-1"></i> Filter</button>
+                                {{-- <button class="btn btn-secondary w-100" type="button" onclick="window.location.href='{{ route('admin.donation.index') }}'"><i class="fas fa-undo me-1"></i> Reset</button> --}}
+                            </div>
+                        </div>
+                    </form>
+                    <form id="category-filter-form">
+                        @csrf
+                        <div class="row mt-2">
+                            <div class="col-md-8 mb-3 mb-md-0">
+                                <label for="category-filter" class="form-label">Filter Kategori</label>
+                                <select class="form-control" id="category-filter" name="category">
+                                    <option value="">Semua Kategori</option>
+                                    @foreach ($categories as $category)
+                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
                                 <button class="btn btn-secondary w-100" type="button" onclick="window.location.href='{{ route('admin.donation.index') }}'"><i class="fas fa-undo me-1"></i> Reset</button>
                             </div>
                         </div>
                     </form>
+
                 </div><!-- end card-header -->
 
                 <div class="card-body pt-0">
@@ -174,5 +193,23 @@
             });
         });
     });
+
+    document.getElementById('category-filter').addEventListener('change', function() {
+        $.ajax({
+            url: "{{ route('admin.donation.filterCategory') }}",
+            type: "GET",
+            data: { category: this.value },
+            success: function(response) {
+                $('#dataTable').html(response.table);
+                $('#pagination-links').html(response.pagination);
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText);
+            }
+        });
+    });
+
+
+
     </script>
 @endpush

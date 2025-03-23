@@ -38,6 +38,9 @@ Route::prefix('admin')->group(function () {
         Route::get('admin/donation/filter', [DonationController::class, 'filter'])->name('admin.donation.filter');
         Route::put('admin/donation/update/{id}', [DonationController::class, 'update'])->name('admin.donation.update');
         Route::delete('admin/donation/{id}', [DonationController::class, 'destroy'])->name('admin.donation.destroy');
+        Route::get('/admin/donations/filter-category', [DonationController::class, 'filterCategory'])
+        ->name('admin.donation.filterCategory');
+
 
         Route::get('/profile', [ProfileController::class, 'index'])->name('admin.profile.index');
 
